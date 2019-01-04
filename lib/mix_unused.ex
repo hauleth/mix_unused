@@ -7,7 +7,8 @@ defmodule Mix.Tasks.Unused do
   @built_ins [
     __info__: 1,
     module_info: 0,
-    module_info: 1
+    module_info: 1,
+    behaviour_info: 1
   ]
 
   import Mix.Compilers.Elixir,
