@@ -46,6 +46,9 @@ defmodule Mix.Tasks.Unused do
   @manifest "compile.elixir"
   @built_ins [
     __info__: 1,
+    __struct__: 0,
+    __struct__: 1,
+    __impl__: 1,
     module_info: 0,
     module_info: 1,
     behaviour_info: 1
@@ -70,20 +73,38 @@ defmodule Mix.Tasks.Unused do
 
     Mix.Task.reenable("unused")
 
-    data = for man <- manifests([]), entry <- read_manifest(man, ""), do: entry
+    data = for man <- manifests(), entry <- read_manifest(man, ""), do: entry
 
     ignored =
       Mix.Project.config()
       |> Keyword.get(:unused, [])
       |> Keyword.get(:ignore, [])
-      |> MapSet.new()
 
     {public, called} = group(data)
 
-    public
-    |> MapSet.difference(ignored)
-    |> MapSet.difference(called)
-    |> MapSet.to_list()
+    unused =
+      public
+      |> MapSet.difference(called)
+      |> MapSet.to_list()
+
+    unused =
+      if ignored == [] do
+        unused
+      else
+        match_spec =
+          Mix.Project.config()
+          |> Keyword.get(:unused, [])
+          |> Keyword.get(:ignore, [])
+          |> Enum.map(&{&1, [], [:"$_"]})
+          |> :ets.match_spec_compile()
+
+        ignored = :ets.match_spec_run(unused, match_spec)
+
+        unused -- ignored
+      end
+
+    unused
+    |> Enum.sort()
     |> print(options)
 
     Mix.shell(original_shell)
@@ -123,6 +144,7 @@ defmodule Mix.Tasks.Unused do
       for {name, arity} <- mod.module_info(:exports),
           {name, arity} not in @built_ins,
           {name, arity} not in callbacks,
+          not macro?(name),
           into: MapSet.new(),
           do: {mod, name, arity}
 
@@ -142,15 +164,18 @@ defmodule Mix.Tasks.Unused do
     group(rest, {public, MapSet.union(called, functions)})
   end
 
-  defp manifests(opts) do
+  defp macro?(name) do
+    case Atom.to_string(name) do
+      "MACRO-" <> _ -> true
+      _ -> false
+    end
+  end
+
+  defp manifests do
     siblings =
-      if opts[:include_siblings] do
-        for %{scm: Mix.SCM.Path, opts: opts} <- Mix.Dep.cached(),
-            opts[:in_umbrella],
-            do: Path.join([opts[:build], ".mix", @manifest])
-      else
-        []
-      end
+      for %{scm: Mix.SCM.Path, opts: opts} <- Mix.Dep.cached(),
+          opts[:from_umbrella],
+          do: Path.join([opts[:build], ".mix", @manifest])
 
     [Path.join(Mix.Project.manifest_path(), @manifest) | siblings]
   end
