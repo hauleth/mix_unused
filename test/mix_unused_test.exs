@@ -1,8 +1,11 @@
 defmodule MixUnusedTest do
   use ExUnit.Case
-  doctest MixUnused
+
+  alias Mix.Tasks.Unused, as: Subject
+
+  doctest Subject
 
   test "greets the world" do
-    assert MixUnused.hello() == :world
+    assert Subject.run(["--quiet"]) == :ok
   end
 end

@@ -1,6 +1,46 @@
 defmodule Mix.Tasks.Unused do
+  use Mix.Task
+
+  def foo, do: nil
+
+  @shortdoc "Find unused public functions"
+
   @moduledoc """
-  Documentation for MixUnused.
+  Compile project and find uncalled public functions.
+
+  ### Warning
+
+  This isn't perfect solution and this will not find dynamic calls in form of:
+
+      apply(mod, func, args)
+
+  So this mean that, for example, if you have custom `child_spec/1` definition
+  then `mix unused` can return such function as unused even when you are using
+  that indirectly in your supervisor.
+
+  ## Configuration
+
+  You can define used functions by adding `mfa` in `unused: [ignored: [⋯]]`
+  in your project configuration:
+
+      def project do
+        [
+          # ⋯
+          unused: [
+            ignore: [
+              {MyApp.Foo, :child_spec, 1}
+            ]
+          ],
+          # ⋯
+        ]
+      end
+
+  ## Options
+
+  - `--exit-status` (default: false) - returns 1 if there are any unused function
+    calls
+  - `--quiet` (default: false) - do not print output
+  - `--compile` (default: true) - compile project before running
   """
 
   @manifest "compile.elixir"
@@ -11,42 +51,55 @@ defmodule Mix.Tasks.Unused do
     behaviour_info: 1
   ]
 
-  import Mix.Compilers.Elixir,
-    only: [read_manifest: 2, source: 1, module: 1]
+  import Mix.Compilers.Elixir, only: [read_manifest: 2, source: 1, module: 1]
 
-  @doc """
-  Hello world.
+  @options [
+    exit_status: :boolean,
+    quiet: :boolean,
+    compile: :boolean
+  ]
 
-  ## Examples
+  def run(argv) do
+    {options, _rest} = OptionParser.parse!(argv, strict: @options)
 
-      iex> MixUnused.hello()
-      :world
+    original_shell = Mix.shell()
 
-  """
-  def run(_) do
+    if options[:quiet], do: Mix.shell(Mix.Shell.Quiet)
+
+    if Keyword.get(options, :compile, true), do: Mix.Task.run("compile")
+
+    Mix.Task.reenable("unused")
+
     data = for man <- manifests([]), entry <- read_manifest(man, ""), do: entry
 
-    excluded =
+    ignored =
       Mix.Project.config()
-      |> Keyword.get(:xref, [])
-      |> Keyword.get(:used, [])
+      |> Keyword.get(:unused, [])
+      |> Keyword.get(:ignore, [])
       |> MapSet.new()
 
     {public, called} = group(data)
 
     public
-    |> MapSet.difference(excluded)
+    |> MapSet.difference(ignored)
     |> MapSet.difference(called)
     |> MapSet.to_list()
-    |> print()
+    |> print(options)
+
+    Mix.shell(original_shell)
   end
 
-  defp print([]), do: nil
+  @spec print(entries :: [mfa()], opts :: keyword()) :: :ok
+  defp print([], _opts), do: :ok
 
-  defp print(entries) do
+  defp print(entries, opts) do
     for func <- entries do
       Mix.shell().info([:red, "function ", display_func(func), " is unused"])
     end
+
+    if Keyword.get(opts, :exit_status, false), do: :erlang.halt(1)
+
+    :ok
   end
 
   defp display_func({mod, name, arity}) do
