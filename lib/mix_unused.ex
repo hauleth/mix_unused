@@ -1,8 +1,6 @@
 defmodule Mix.Tasks.Unused do
   use Mix.Task
 
-  def foo, do: nil
-
   @shortdoc "Find unused public functions"
 
   @moduledoc """
@@ -95,6 +93,11 @@ defmodule Mix.Tasks.Unused do
           Mix.Project.config()
           |> Keyword.get(:unused, [])
           |> Keyword.get(:ignore, [])
+          |> Enum.map(fn
+            {_m, _f, _a} = entry -> entry
+            {m, f} -> {m, f, :_}
+            m when is_atom(m) -> {m, :_, :_}
+          end)
           |> Enum.map(&{&1, [], [:"$_"]})
           |> :ets.match_spec_compile()
 
