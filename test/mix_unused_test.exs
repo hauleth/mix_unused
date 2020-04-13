@@ -1,11 +1,11 @@
 defmodule MixUnusedTest do
-  use ExUnit.Case
+  use MixUnused.Case
 
-  alias Mix.Tasks.Unused, as: Subject
-
-  doctest Subject
-
-  test "greets the world" do
-    assert Subject.run(["--quiet"]) == :ok
+  test "simple file" do
+    in_fixture("umbrella", fn ->
+      Mix.Project.in_project(:umbrella, ".", fn _ ->
+        assert nil = Mix.Task.run("compile")
+      end)
+    end)
   end
 end
