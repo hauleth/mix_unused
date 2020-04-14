@@ -9,6 +9,29 @@ defmodule MixUnused.Case do
     end
   end
 
+  @apps Enum.map(Application.loaded_applications(), &elem(&1, 0))
+
+  setup do
+    on_exit(fn ->
+      Application.start(:logger)
+      Mix.env(:dev)
+      Mix.target(:host)
+      Mix.Task.clear()
+      Mix.Shell.Process.flush()
+      Mix.State.clear_cache()
+      Mix.ProjectStack.clear_stack()
+      delete_tmp_paths()
+
+      for {app, _, _} <- Application.loaded_applications(), app not in @apps do
+        Application.stop(app)
+        Application.unload(app)
+      end
+
+      :ok
+    end)
+
+    :ok
+  end
   def fixture_path do
     Path.expand("fixtures", __DIR__)
   end
@@ -70,5 +93,10 @@ defmodule MixUnused.Case do
         purge([mod])
       end
     end
+  end
+
+  defp delete_tmp_paths do
+    tmp = tmp_path() |> String.to_charlist()
+    for path <- :code.get_path(), :string.str(path, tmp) != 0, do: :code.del_path(path)
   end
 end

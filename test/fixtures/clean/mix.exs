@@ -3,7 +3,8 @@ defmodule MixUnused.Fixtures.CleanProject do
 
   def project do
     [
-      app: :mix_unused_fixture_clean,
+      app: :clean,
+      compilers: [:unused | Mix.compilers()],
       version: "0.0.0"
     ]
   end

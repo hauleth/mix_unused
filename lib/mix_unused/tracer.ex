@@ -1,4 +1,4 @@
-defmodule MixUnused do
+defmodule MixUnused.Tracer do
   use GenServer
 
   @tab __MODULE__.Functions
@@ -19,12 +19,12 @@ defmodule MixUnused do
   def trace(_event, _env), do: :ok
 
   defp add_call(m, f, a) do
-    _ = :ets.insert_new(@tab, {{m, f, a}})
+    _ = :ets.insert_new(@tab, {{m, f, a}, 1})
 
     :ok
   end
 
-  def get_calls, do: :ets.select(@tab, [{{:"$1"}, [], [:"$1"]}])
+  def get_calls, do: :ets.select(@tab, [{{:"$1", :_}, [], [:"$1"]}])
 
   def init(_args) do
     _ = :ets.new(@tab, [:public, :named_table, :set, {:write_concurrency, true}])
