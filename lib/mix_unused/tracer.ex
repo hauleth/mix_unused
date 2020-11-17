@@ -26,9 +26,13 @@ defmodule MixUnused.Tracer do
 
   def get_calls, do: :ets.select(@tab, [{{:"$1", :_}, [], [:"$1"]}])
 
+  def stop, do: GenServer.call(__MODULE__, :stop)
+
   def init(_args) do
     _ = :ets.new(@tab, [:public, :named_table, :set, {:write_concurrency, true}])
 
     {:ok, []}
   end
+
+  def handle_call(:stop, _, state), do: {:stop, :normal, :ok, state}
 end

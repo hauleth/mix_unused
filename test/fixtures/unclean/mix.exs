@@ -14,4 +14,3 @@ defmodule MixUnused.Fixtures.UnleanProject do
     ]
   end
 end
-

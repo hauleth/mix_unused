@@ -77,6 +77,7 @@ defmodule Mix.Tasks.Compile.Unused do
 
     severity = Keyword.get(opts, :severity, "hint") |> severity()
     unused = all_functions(Mix.Project.config()[:app]) -- Tracer.get_calls()
+    :ok  = Tracer.stop()
 
     messages =
       for {m, f, a} <- filter_ignored(unused) do
@@ -87,6 +88,7 @@ defmodule Mix.Tasks.Compile.Unused do
           position: nil,
           file: "unknown"
         }
+        |> print_diagnostic()
       end
 
     {status, messages ++ diagnostics}
@@ -154,4 +156,16 @@ defmodule Mix.Tasks.Compile.Unused do
   defp severity("warn"), do: :warning
   defp severity("warning"), do: :warning
   defp severity("error"), do: :error
+
+  defp print_diagnostic(diag) do
+    Mix.shell().info([level(diag.severity), diag.message])
+
+    diag
+  end
+
+  defp level(level), do: [:bright, color(level), "#{level}: ", :reset]
+
+  defp color(:error), do: :red
+  defp color(:warning), do: :yellow
+  defp color(_), do: :blue
 end
