@@ -99,7 +99,6 @@ defmodule Mix.Tasks.Compile.Unused do
 
     calls =
       Enum.flat_map(data, fn {_key, value} -> value end)
-      |> IO.inspect(label: :calls)
 
     File.write!(manifest, :erlang.term_to_binary(data))
 
