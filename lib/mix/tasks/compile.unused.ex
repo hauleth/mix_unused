@@ -63,7 +63,7 @@ defmodule Mix.Tasks.Compile.Unused do
 
   @impl true
   def run(argv) do
-    {opts, _rest, []} = OptionParser.parse(argv, strict: @options)
+    {opts, _rest, _other} = OptionParser.parse(argv, strict: @options)
     {:ok, _pid} = Tracer.start_link()
 
     [manifest] = manifests()
