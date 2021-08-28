@@ -1,4 +1,6 @@
 defmodule MixUnused.Tracer do
+  @moduledoc false
+
   use GenServer
 
   @tab __MODULE__.Functions

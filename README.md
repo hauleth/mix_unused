@@ -1,6 +1,6 @@
 # Mix Unused
 
-Simple `mix` task that list all unused public functions in your project.
+Mix compiler tracer for detecting unused public functions.
 
 ## Installation
 
@@ -21,14 +21,33 @@ be found at [https://hexdocs.pm/mix_unused](https://hexdocs.pm/mix_unused).
 
 ## Usage
 
-Install and run `mix unused` and you will get list of all unused public
-functions.
+After installation you need to add `:unused` as a compiler to the list of Mix
+compilers:
+
+```elixir
+defmodule MySystem.MixProject do
+  use Mix.Project
+
+  def project do
+    [
+      compilers: [:unused] ++ Mix.compilers(),
+      # In case of Phoenix projects you need to add it to the list
+      # compilers: [:unused, :phoenix, :gettext] ++ Mix.compilers()
+      # ...
+    ]
+  end
+
+  # ...
+end
+```
 
 ### Warning
 
 This isn't perfect solution and this will not find dynamic calls in form of:
 
-    apply(mod, func, args)
+```elixir
+apply(mod, func, args)
+```
 
 So this mean that, for example, if you have custom `child_spec/1` definition
 then `mix unused` can return such function as unused even when you are using
@@ -39,24 +58,19 @@ that indirectly in your supervisor.
 You can define used functions by adding `mfa` in `unused: [ignored: [⋯]]`
 in your project configuration:
 
-    def project do
-      [
-        # ⋯
-        unused: [
-          ignore: [
-            {MyApp.Foo, :child_spec, 1}
-          ]
-        ],
-        # ⋯
+```elixir
+def project do
+  [
+    # ⋯
+    unused: [
+      ignore: [
+        {MyApp.Foo, :child_spec, 1}
       ]
-    end
-
-## Options
-
-- `--exit-status` (default: false) - returns 1 if there are any unused function
-calls
-- `--quiet` (default: false) - do not print output
-- `--compile` (default: true) - compile project before running
+    ],
+    # ⋯
+  ]
+end
+```
 
 # License
 

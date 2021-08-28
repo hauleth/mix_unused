@@ -4,9 +4,21 @@ defmodule MixUnused.MixProject do
   def project do
     [
       app: :mix_unused,
+      description: "Mix compiler tracer for detecting unused public functions",
       version: "0.1.0",
       elixir: "~> 1.10",
-      deps: deps()
+      package: [
+        licenses: ~w[MPL-2.0],
+        links: %{
+          "GitHub" => "https://github.com/hauleth/mix_unused"
+        }
+      ],
+      deps: [
+        {:ex_doc, ">= 0.0.0", only: :dev}
+      ],
+      docs: [
+        main: "Mix.Tasks.Compile.Unused"
+      ]
     ]
   end
 
@@ -16,7 +28,4 @@ defmodule MixUnused.MixProject do
       extra_applications: [:mix, :logger]
     ]
   end
-
-  # Run "mix help deps" to learn about dependencies.
-  defp deps, do: []
 end
