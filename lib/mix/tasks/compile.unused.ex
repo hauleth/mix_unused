@@ -77,7 +77,7 @@ defmodule Mix.Tasks.Compile.Unused do
 
   @impl true
   def manifests do
-    [Path.join(Mix.Project.build_path(), @manifest)]
+    [Path.join(Mix.Project.manifest_path(), @manifest)]
   end
 
   @impl true
@@ -97,8 +97,7 @@ defmodule Mix.Tasks.Compile.Unused do
 
     data = Map.merge(cache, Tracer.get_data())
 
-    calls =
-      Enum.flat_map(data, fn {_key, value} -> value end)
+    calls = Enum.flat_map(data, fn {_key, value} -> value end)
 
     File.write!(manifest, :erlang.term_to_binary(data))
 
@@ -164,19 +163,13 @@ defmodule Mix.Tasks.Compile.Unused do
       |> Enum.map(fn
         {_m, _f, _a} = entry -> entry
         {m, f} -> {m, f, :_}
-        m when is_atom(m) -> {m, :_, :_}
+        m -> {m, :_, :_}
       end)
 
-    Enum.reject(functions, fn {mfa, _} ->
-      Enum.any?(filters, &mfa_match?(&1, mfa))
+    Enum.reject(functions, fn {func, _} ->
+      Enum.any?(filters, &MixUnused.Utils.mfa_match?(&1, func))
     end)
   end
-
-  # TODO(?): Add matching against regular expressions
-  defp mfa_match?({m, :_, :_}, {m, _, _}), do: true
-  defp mfa_match?({m, f, :_}, {m, f, _}), do: true
-  defp mfa_match?({m, f, a}, {m, f, a}), do: true
-  defp mfa_match?(_, _), do: false
 
   defp severity("hint"), do: :hint
   defp severity("info"), do: :information
