@@ -10,6 +10,6 @@ defmodule MixUnused.Utils do
   def match?(value, value), do: true
   def match?(:_, _value), do: true
   def match?(_.._ = range, value) when is_integer(value), do: value in range
-  def match?(%Regex{} = re, value) when is_atom(value), do: inspect(value) =~ re
+  def match?(%Regex{} = re, value) when is_atom(value), do: inspect(value) =~ re or Atom.to_string(value) =~ re
   def match?(_, _), do: false
 end
