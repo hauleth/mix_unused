@@ -108,6 +108,7 @@ defmodule Mix.Tasks.Compile.Unused do
       |> all_functions()
       |> Map.drop(calls)
       |> filter_ignored()
+      |> Enum.sort()
 
     :ok = Tracer.stop()
 
