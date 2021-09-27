@@ -14,7 +14,8 @@ defmodule MixUnused.MixProject do
         }
       ],
       deps: [
-        {:ex_doc, ">= 0.0.0", only: :dev}
+        {:ex_doc, ">= 0.0.0", only: :dev},
+        {:dialyxir, "~> 1.0", only: :dev}
       ],
       docs: [
         main: "Mix.Tasks.Compile.Unused"
