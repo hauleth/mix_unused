@@ -61,4 +61,37 @@ defmodule MixUnused.TracerTest do
   test "contains information about called imported function" do
     assert {String, :first, 1} in @subject.get_calls()
   end
+
+  @code (quote do
+           defmacro foo(), do: :ok
+
+           def test do
+             foo()
+           end
+         end)
+  test "contains information about called local macros", ctx do
+    assert {ctx.module_name, :foo, 0} in @subject.get_calls()
+  end
+
+  @code (quote do
+           require Logger
+
+           def test do
+             Logger.info("foo")
+           end
+         end)
+  test "contains information about called remote macros" do
+    assert {Logger, :info, 1} in @subject.get_calls()
+  end
+
+  @code (quote do
+           import Logger
+
+           def test do
+             info("foo")
+           end
+         end)
+  test "contains information about called imported macros" do
+    assert {Logger, :info, 1} in @subject.get_calls()
+  end
 end

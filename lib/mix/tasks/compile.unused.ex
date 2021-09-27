@@ -18,7 +18,7 @@ defmodule Mix.Tasks.Compile.Unused do
 
   ## Configuration
 
-  You can define used functions by adding `mfa` in `unused: [ignored: [⋯]]`
+  You can define used functions by adding pattern in `unused: [ignored: [⋯]]`
   in your project configuration:
 
       def project do
@@ -32,6 +32,39 @@ defmodule Mix.Tasks.Compile.Unused do
           # ⋯
         ]
       end
+
+  ### Patterns
+
+  `unused` patterns are similar to the match specs from Erlang, but extends
+  their API to be much more flexible. Simplest possible patter is to match
+  exactly one function, which mean that we use 3-ary tuple with module,
+  function name, and arity as respective elements, ex.:
+
+      [{Foo, :bar, 1}]
+
+  This will match function `Foo.bar/1`, however often we want to use more
+  broad patterns, in such case there are few tricks we can use. First is
+  to use `:_` which will mean "wildcard" aka any value will match, ex.:
+
+      [{:_, :child_spec, 1}]
+
+  Will ignore all functions `child_spec/1` in your application (you probably
+  should add it, as `unused` is not able to notice that this function is used
+  even if it is used in any supervisor, as it will be dynamic call).
+
+  In additiona to wildcard matches, which isn't often what we really want, we
+  can use regular expressions for module and function name or range for arity:
+
+      [
+        {:_, ~r/^__.+__\??$/, :_},
+        {~r/^MyAppWeb\..*Controller/, :_, 2},
+        {MyApp.Test, :foo, 1..2}
+      ]
+
+  To make the ignore specification list less verbose there is also option to
+  omit last `:_`, i.e.: `{Foo, :bar, :_}` is the same as `{Foo, :bar}`, if you
+  want to ignore whole module, then you can just use `Foo` (it also works for
+  regular expressions).
 
   ## Options
 
@@ -49,6 +82,7 @@ defmodule Mix.Tasks.Compile.Unused do
 
   alias MixUnused.Tracer
   alias MixUnused.Filter
+  alias MixUnused.Exports
 
   @impl true
   def run(argv) do
@@ -106,8 +140,7 @@ defmodule Mix.Tasks.Compile.Unused do
           compiler_name: "unused",
           message: "#{inspect(m)}.#{f}/#{a} is unused",
           severity: severity,
-          # TODO: Find a way to extract position of the function
-          position: nil,
+          position: meta.line,
           file: meta.file
         }
         |> print_diagnostic()
@@ -121,7 +154,7 @@ defmodule Mix.Tasks.Compile.Unused do
     :ok = Application.load(app)
 
     Application.spec(app, :modules)
-    |> Enum.flat_map(&Filter.exports/1)
+    |> Enum.flat_map(&Exports.fetch/1)
     |> Map.new()
   end
 
@@ -139,7 +172,17 @@ defmodule Mix.Tasks.Compile.Unused do
   defp severity("error"), do: :error
 
   defp print_diagnostic(diag) do
-    Mix.shell().info([level(diag.severity), diag.message])
+    file = Path.relative_to_cwd(diag.file)
+
+    Mix.shell().info([
+      level(diag.severity),
+      diag.message,
+      "\n    ",
+      file,
+      ?:,
+      Integer.to_string(diag.position),
+      "\n"
+    ])
 
     diag
   end
