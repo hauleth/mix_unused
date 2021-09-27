@@ -1,0 +1,32 @@
+style: github
+template: CHANGELOG.tpl.md
+info:
+  title: CHANGELOG
+  repository_url: https://github.com/hauleth/mix_unused
+options:
+  tag_filter_pattern: "^v"
+  sort: "date"
+  commits:
+    filters:
+      Type:
+        - ft
+        - feat
+        - fix
+        - docs
+  commit_groups:
+    sort_by: Subject
+    group_by: Type
+    title_maps:
+      feat: Features
+      ft: Features
+      fix: Bug Fixes
+      perf: Performance Improvements
+      refactor: Code Refactoring
+  header:
+    pattern: "^(\\w*)\\:\\s(.*)$"
+    pattern_maps:
+      - Type
+      - Subject
+  notes:
+    keywords:
+      - BREAKING CHANGE
