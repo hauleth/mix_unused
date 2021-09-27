@@ -81,6 +81,6 @@ defmodule MixUnusedTest do
   end
 
   defp has_diagnostics_for?(diagnostics, m, f, a) do
-    Enum.any?(diagnostics, & &1.message =~ "#{inspect(m)}.#{f}/#{a}")
+    Enum.any?(diagnostics, &(&1.message =~ "#{inspect(m)}.#{f}/#{a}"))
   end
 end

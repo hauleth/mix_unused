@@ -1,3 +1,3 @@
 defmodule Bar do
-  def bar, do: Foo.bar
+  def bar, do: Foo.bar()
 end

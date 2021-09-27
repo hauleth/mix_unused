@@ -5,47 +5,65 @@ defmodule MixUnused.Tracer do
 
   @tab __MODULE__.Functions
 
-  def start_link() do
-    with {:error, {:already_started, pid}} <-
-           GenServer.start_link(__MODULE__, [], name: __MODULE__) do
-      :ets.delete_all_objects(@tab)
-
-      {:ok, pid}
-    end
+  @doc false
+  def child_spec(_) do
+    %{
+      id: __MODULE__,
+      start: {__MODULE__, :start_link, []},
+      restart: :transient
+    }
   end
 
-  @events ~w[imported_function local_function remote_function]a
+  @doc false
+  def start_link() do
+    GenServer.start_link(__MODULE__, [], name: __MODULE__)
+  end
 
-  def trace({action, _meta, module, name, arity}, env) when action in @events do
+  def trace({action, _meta, module, name, arity}, env)
+      when action in ~w[imported_function remote_function]a do
     add_call(module, name, arity, env)
+
+    :ok
+  end
+
+  def trace({:local_function, _meta, name, arity}, env) do
+    add_call(env.module, name, arity, env)
+
+    :ok
   end
 
   def trace(_event, _env), do: :ok
 
+  @spec add_call(module(), atom(), arity(), Macro.Env.t()) :: :ok
   defp add_call(m, f, a, env) do
     _ = :ets.insert_new(@tab, {{env.module, {m, f, a}}, []})
 
     :ok
   end
 
+  @spec get_data() :: %{module() => [mfa()]}
   def get_data do
-    :ets.select(@tab, [{{:"$1", :_}, [], [:"$1"]}])
+    @tab
+    |> :ets.select([{{:"$1", :_}, [], [:"$1"]}])
     |> Enum.reduce(%{}, fn {mod, mfa}, acc ->
       Map.update(acc, mod, [mfa], &[mfa | &1])
     end)
   end
 
+  @spec get_calls() :: [mfa()]
   def get_calls do
     :ets.select(@tab, [{{{:_, :"$1"}, :_}, [], [:"$1"]}])
   end
 
   def stop, do: GenServer.call(__MODULE__, :stop)
 
+  @impl true
   def init(_args) do
     _ = :ets.new(@tab, [:public, :named_table, :set, {:write_concurrency, true}])
 
     {:ok, []}
   end
 
+  @impl true
   def handle_call(:stop, _, state), do: {:stop, :normal, :ok, state}
 end
