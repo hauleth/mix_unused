@@ -142,9 +142,10 @@ defmodule Mix.Tasks.Compile.Unused do
       level(diag.severity),
       diag.message,
       "\n    ",
-      diag.file,
+      Path.relative_to_cwd(diag.file),
       ?:,
-      Integer.to_string(diag.position)
+      Integer.to_string(diag.position),
+      "\n"
     ])
 
     diag
