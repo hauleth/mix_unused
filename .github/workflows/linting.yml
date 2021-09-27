@@ -1,0 +1,54 @@
+name: Lints
+
+on:
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  formatting:
+    name: Check formatting
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Elixir
+      uses: erlef/setup-beam@v1
+      with:
+        otp-version: '24.0'
+        elixir-version: '1.12.1'
+        rebar3-version: '3.15.2'
+    - name: Check formatting
+      run: mix format --check-formatted
+
+  credo:
+    name: Check our credo
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Elixir
+      uses: erlef/setup-beam@v1
+      with:
+        otp-version: '24.0'
+        elixir-version: '1.12.1'
+        rebar3-version: '3.15.2'
+    - name: Restore dependencies cache
+      uses: actions/cache@v2
+      with:
+        path: deps
+        key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
+        restore-keys: ${{ runner.os }}-mix-
+    - name: Install dependencies
+      run: mix do deps.get, deps.compile
+    - name: Run Credo
+      run: mix credo --all
+
+  commit_messages:
+    name: Use convention for commit messages
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: Refs
+      run: git show-ref
+    - name: Check
+      run: "git log --exit-code --oneline -E --invert-grep --grep='^(ft|fix|docs|chore):' ^refs/remotes/origin/$GITHUB_BASE_REF HEAD"
