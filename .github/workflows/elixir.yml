@@ -33,3 +33,22 @@ jobs:
       run: mix do deps.get, deps.compile
     - name: Run tests
       run: mix test
+
+  lint:
+    name: Check formatting
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        otp_version: ['24.0']
+        elixir_version: ['1.12.1']
+        rebar3_version: ['3.15.2']
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Elixir
+      uses: erlef/setup-beam@v1
+      with:
+        otp-version: ${{ matrix.otp_version }}
+        elixir-version: ${{ matrix.elixir_version }}
+        rebar3-version: ${{ matrix.rebar3_version }}
+    - name: Check formatting
+      run: mix format --check-formatted

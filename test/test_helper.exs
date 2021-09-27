@@ -32,6 +32,7 @@ defmodule MixUnused.Case do
 
     :ok
   end
+
   def fixture_path do
     Path.expand("fixtures", __DIR__)
   end
