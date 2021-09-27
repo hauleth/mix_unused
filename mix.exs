@@ -14,6 +14,7 @@ defmodule MixUnused.MixProject do
         }
       ],
       deps: [
+        {:credo, ">= 0.0.0", only: :dev},
         {:ex_doc, ">= 0.0.0", only: :dev},
         {:dialyxir, "~> 1.0", only: :dev}
       ],
