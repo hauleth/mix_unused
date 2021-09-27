@@ -106,8 +106,7 @@ defmodule Mix.Tasks.Compile.Unused do
           compiler_name: "unused",
           message: "#{inspect(m)}.#{f}/#{a} is unused",
           severity: severity,
-          # TODO: Find a way to extract position of the function
-          position: nil,
+          position: meta.line,
           file: meta.file
         }
         |> print_diagnostic()
@@ -139,7 +138,14 @@ defmodule Mix.Tasks.Compile.Unused do
   defp severity("error"), do: :error
 
   defp print_diagnostic(diag) do
-    Mix.shell().info([level(diag.severity), diag.message])
+    Mix.shell().info([
+      level(diag.severity),
+      diag.message,
+      "\n    ",
+      diag.file,
+      ?:,
+      Integer.to_string(diag.position)
+    ])
 
     diag
   end

@@ -36,8 +36,8 @@ defmodule MixUnusedTest do
       in_fixture("unclean", fn ->
         assert {{:ok, diagnostics}, output} = run(:unclean, "compile")
 
-        assert has_diagnostics_for?(diagnostics, Foo, :foo, 0)
         assert output =~ "Foo.foo/0 is unused"
+        assert has_diagnostics_for?(diagnostics, Foo, :foo, 0)
       end)
     end
   end

@@ -19,14 +19,27 @@ defmodule MixUnused.Tracer do
     GenServer.start_link(__MODULE__, [], name: __MODULE__)
   end
 
+  @remote ~w[
+      imported_function
+      remote_function
+      imported_macro
+      remote_macro
+    ]a
+
   def trace({action, _meta, module, name, arity}, env)
-      when action in ~w[imported_function remote_function]a do
+      when action in @remote do
     add_call(module, name, arity, env)
 
     :ok
   end
 
-  def trace({:local_function, _meta, name, arity}, env) do
+  @local ~w[
+      local_function
+      local_macro
+    ]a
+
+  def trace({action, _meta, name, arity}, env)
+      when action in @local do
     add_call(env.module, name, arity, env)
 
     :ok
