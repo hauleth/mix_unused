@@ -1,49 +1,47 @@
+<a name="unreleased"></a>
+## [Unreleased]
+
+
 <a name="v0.2.0"></a>
-## v0.2.0 - 2021-09-27
-
-### Chore
-- release v0.2.0
-- add Credo
-- fix formatting
-- split code into modules for easier testing
-
+## [v0.2.0] - 2021-09-27
 ### Docs
 - improve documentation of `compile.unused`
 
-### Fix
+### Bug Fixes
 - print path to file as a relative path
 - test against "textual" representation of atoms as well
 
-### Ft
+### Features
 - add support for macros
 - sort results to return predictable results
 - allow filtering using regular expressions
 
+### Pull Requests
+- Merge pull request [#9](https://github.com/hauleth/mix_unused/issues/9) from hauleth/ft/support-elixir-macros
+- Merge pull request [#8](https://github.com/hauleth/mix_unused/issues/8) from hauleth/ft/filter-using-regular-expressions
+
 
 <a name="v0.1.0"></a>
 ## v0.1.0 - 2021-08-28
-### Chore
-- prepare first release
-- add GitHub Actions
+### Bug Fixes
+- ignore additional flags
+- remove inspect
 
-### Docs
-- write documentation and provide basic options
+### Features
+- migrate to compiler tracers
 
-### Feat
+### Features
 - simplify matching patterns by allow just atoms and 2-ary tuples
 - update filtering
 - add module.behaviour_info/1 to list of ignored built ins
 
-### Fix
-- ignore additional flags
-- remove inspect
-
-### Ft
-- migrate to compiler tracers
+### Docs
+- write documentation and provide basic options
 
 ### Pull Requests
 - Merge pull request [#3](https://github.com/hauleth/mix_unused/issues/3) from hauleth/chore/add-ci-actions
 - Merge pull request [#2](https://github.com/hauleth/mix_unused/issues/2) from hauleth/ft/migrate-to-compiler-tracers
 
 
-[Unreleased]: https://github.com/hauleth/mix_unused/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/hauleth/mix_unused/compare/v0.2.0...HEAD
+[v0.2.0]: https://github.com/hauleth/mix_unused/compare/v0.1.0...v0.2.0
