@@ -33,11 +33,14 @@ defmodule MixUnused.Exports do
     # We need to load behaviours as there is no other way to get list of
     # callbacks than to call `behaviour_info/1`
     Enum.flat_map(behaviours, fn mod ->
-      with {_hidden, _meta, docs} <- fetch_docs(mod) do
-        Enum.flat_map(docs, fn
-          {{:callback, f, a}, _anno, _sig, _doc, _meta} -> [{f, a}]
-          _ -> []
-        end)
+      case fetch_docs(mod) do
+        {_hidden, _meta, docs} ->
+          Enum.flat_map(docs, fn
+            {{:callback, f, a}, _anno, _sig, _doc, _meta} -> [{f, a}]
+            _ -> []
+          end)
+        _ ->
+          mod.behaviour_info(:callbacks)
       end
     end)
   end
