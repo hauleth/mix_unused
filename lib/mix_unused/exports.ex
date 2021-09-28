@@ -14,10 +14,9 @@ defmodule MixUnused.Exports do
     # unexpected behaviours in case of `on_load` callbacks
     with path when is_list(path) <- :code.which(module),
          {:ok, {^module, data}} <- :beam_lib.chunks(path, [:attributes, :compile_info]),
-         {:docs_v1, _anno, _lang, _format, _mod_doc, _meta, docs} <-
-           Code.fetch_docs(to_string(path)) do
+         {_hidden, _meta, docs} <- fetch_docs(to_string(path)) do
       callbacks = data[:attributes] |> Keyword.get(:behaviour, []) |> callbacks()
-      source = Keyword.get(data[:compile_info], :source, "nofile") |> to_string()
+      source = data[:compile_info] |> Keyword.get(:source, "nofile") |> to_string()
 
       for {{type, name, arity}, anno, _sig, _doc, meta} when type in @types <- docs,
           not Map.get(meta, :export, false),
@@ -33,6 +32,23 @@ defmodule MixUnused.Exports do
   defp callbacks(behaviours) do
     # We need to load behaviours as there is no other way to get list of
     # callbacks than to call `behaviour_info/1`
-    Enum.flat_map(behaviours, & &1.behaviour_info(:callbacks))
+    Enum.flat_map(behaviours, fn mod ->
+      with {_hidden, _meta, docs} <- fetch_docs(mod) do
+        Enum.flat_map(docs, fn
+          {{:callback, f, a}, _anno, _sig, _doc, _meta} -> [{f, a}]
+          _ -> []
+        end)
+      end
+    end)
+  end
+
+  defp fetch_docs(mod) do
+    case Code.fetch_docs(mod) do
+      {:docs_v1, _anno, _lang, _format, mod_doc, meta, docs} ->
+        {mod_doc == :hidden, meta, docs}
+
+      _ ->
+        []
+    end
   end
 end

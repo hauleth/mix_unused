@@ -52,6 +52,28 @@ defmodule MixUnused.TracerTest do
   end
 
   @code (quote do
+           def test do
+             &__MODULE__.foo/0
+           end
+
+           def foo(), do: :ok
+         end)
+  test "contains information about function returned by remote reference", ctx do
+    assert {ctx.module_name, :foo, 0} in @subject.get_calls()
+  end
+
+  @code (quote do
+           def test do
+             &foo/0
+           end
+
+           def foo(), do: :ok
+         end)
+  test "contains information about function returned by local reference", ctx do
+    assert {ctx.module_name, :foo, 0} in @subject.get_calls()
+  end
+
+  @code (quote do
            import String
 
            def test do
