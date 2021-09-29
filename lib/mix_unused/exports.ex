@@ -39,6 +39,7 @@ defmodule MixUnused.Exports do
             {{:callback, f, a}, _anno, _sig, _doc, _meta} -> [{f, a}]
             _ -> []
           end)
+
         _ ->
           mod.behaviour_info(:callbacks)
       end
