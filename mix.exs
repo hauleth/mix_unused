@@ -8,7 +8,7 @@ defmodule MixUnused.MixProject do
       version: "0.2.0",
       elixir: "~> 1.10",
       package: [
-        licenses: ~w[MPL-2.0],
+        licenses: ~w[MIT],
         links: %{
           "GitHub" => "https://github.com/hauleth/mix_unused"
         }
