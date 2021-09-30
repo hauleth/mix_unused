@@ -1,0 +1,50 @@
+name: Git
+
+on:
+  pull_request_target:
+    branches: [ master ]
+
+jobs:
+  commit-messages:
+    name: Check commit messages
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+        ref: ${{ github.event.pull_request.head.sha }}
+    - name: Get PR URL
+      uses: Dovyski/payload-info-action@master
+      id: issue_url
+      with:
+        filter_pull_request: '.pull_request._links.issue.href'
+    - name: Check
+      env:
+        TYPES: ft|fix|docs|chore|test
+      run: |
+        ! git log --oneline -E --invert-grep --grep="^($TYPES):" --pretty=format:"::error title=Invalid commit message::%h %s" origin/$GITHUB_BASE_REF... | grep "."
+    - name: Unlabel correct PR
+      if: ${{ success() }}
+      run: |
+        curl -X DELETE \
+          --header 'authorization: Bearer ${{ github.token }}' \
+          --header 'content-type: application/json' \
+          ${{ steps.issue_url.outputs.value }}/labels/invalid/commit-messages
+    - name: Label PR with invalid commit messages
+      if: ${{ failure() }}
+      run: |
+        curl -X POST \
+          --header 'authorization: Bearer ${{ github.token }}' \
+          --header 'content-type: application/json' \
+          --data '["invalid/commit-messages"]' \
+          ${{ steps.issue_url.outputs.value }}/labels
+
+  labeler:
+    name: Label PRs depending on changes
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+        ref: ${{ github.event.pull_request.head.sha }}
+    - uses: actions/labeler@v3

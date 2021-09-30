@@ -1,0 +1,11 @@
+scope/tasks:
+  - any: ['lib/mix/tasks/*']
+
+scope/ci:
+  - any: ['.github/workflows/*']
+
+scope/test:
+  - any: ['test/**/*', '!test/fixtures/**/*']
+
+scope/test/fixtures:
+  - any: ['test/fixtures/**/*']

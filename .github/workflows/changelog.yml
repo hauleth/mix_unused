@@ -1,0 +1,26 @@
+name: Changelog
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  update-changelog:
+    name: Update changelog
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+        ref: master
+    - uses: Bpazy/setup-git-chglog@v1
+    - name: git-chglog version
+      run: git chglog --version
+    - name: Generate changelog
+      run: git chglog | tee CHANGELOG.md
+    - name: Commit
+      run: |
+        git config user.email ""
+        git config user.name "GitHub Action Bot"
+        git diff -- CHANGELOG.md
+        git commit -m "chore: update CHANGELOG [skip ci]" CHANGELOG.md && git push origin master || true

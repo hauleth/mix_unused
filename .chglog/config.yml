@@ -4,8 +4,6 @@ info:
   title: CHANGELOG
   repository_url: https://github.com/hauleth/mix_unused
 options:
-  tag_filter_pattern: "^v"
-  sort: "date"
   commits:
     filters:
       Type:
@@ -14,14 +12,11 @@ options:
         - fix
         - docs
   commit_groups:
-    sort_by: Subject
-    group_by: Type
     title_maps:
-      feat: Features
       ft: Features
+      feat: Features
       fix: Bug Fixes
-      perf: Performance Improvements
-      refactor: Code Refactoring
+      docs: Documentation
   header:
     pattern: "^(\\w*)\\:\\s(.*)$"
     pattern_maps:
