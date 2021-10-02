@@ -11,6 +11,8 @@ defmodule MixUnused.TracerTest do
     options = Code.compiler_options()
     name = Module.concat([__MODULE__, Test, ctx.test])
 
+    Application.put_env(:mix_unused, :set, Remote)
+
     try do
       start_supervised!(@subject)
 
@@ -115,5 +117,38 @@ defmodule MixUnused.TracerTest do
          end)
   test "contains information about called imported macros" do
     assert {Logger, :info, 1} in @subject.get_calls()
+  end
+
+  @code (quote do
+           @attr Remote
+
+           def test do
+             @attr.foo()
+           end
+         end)
+  test "contains infromation about remote calls using module attributes" do
+    assert {Remote, :foo, 0} in @subject.get_calls()
+  end
+
+  @code (quote do
+           @attr Application.compile_env(:mix_unused, :unset, Remote)
+
+           def test do
+             @attr.foo()
+           end
+         end)
+  test "contains infromation about remote calls using dynamic module attributes (default)" do
+    assert {Remote, :foo, 0} in @subject.get_calls()
+  end
+
+  @code (quote do
+           @attr Application.compile_env(:mix_unused, :set, NotRemote)
+
+           def test do
+             @attr.foo()
+           end
+         end)
+  test "contains infromation about remote calls using dynamic module attributes" do
+    assert {Remote, :foo, 0} in @subject.get_calls()
   end
 end
