@@ -8,8 +8,39 @@ defmodule MixUnusedTest do
       in_fixture("umbrella", fn ->
         assert {{:ok, diagnostics}, _} = run(:umbrella, "compile")
 
-        assert has_diagnostics_for?(diagnostics, ModuleA, :foo, 0)
-        assert has_diagnostics_for?(diagnostics, ModuleB, :bar, 0)
+        assert find_diagnostics_for(diagnostics, ModuleA, :foo, 0)
+        assert find_diagnostics_for(diagnostics, ModuleB, :bar, 0)
+      end)
+    end
+
+    test "exit if severity is set to error" do
+      in_fixture("umbrella", fn ->
+        assert {:shutdown, 1} = catch_exit(run(:umbrella, "compile", ~w[--severity error]))
+      end)
+    end
+
+    test "accepts severity option" do
+      in_fixture("umbrella", fn ->
+        assert {{:ok, diagnostics}, _} = run(:umbrella, "compile", ~w[--severity info])
+
+        assert %{severity: :information} = find_diagnostics_for(diagnostics, ModuleA, :foo, 0)
+      end)
+    end
+
+    test "warns on warning severity" do
+      in_fixture("umbrella", fn ->
+        assert {{:ok, diagnostics}, _} = run(:umbrella, "compile", ~w[--severity warning])
+
+        assert %{severity: :warning} = find_diagnostics_for(diagnostics, ModuleA, :foo, 0)
+      end)
+    end
+
+    test "exit if severity is warning and `--warnings-as-errors is used`" do
+      in_fixture("umbrella", fn ->
+        assert {:shutdown, 1}
+                 catch_exit(
+                   run(:umbrella, "compile", ~w[--severity warning --warnings-as-errors])
+                 )
       end)
     end
   end
@@ -27,7 +58,7 @@ defmodule MixUnusedTest do
       in_fixture("unclean", fn ->
         assert {{:ok, diagnostics}, output} = run(:unclean, "compile")
 
-        refute has_diagnostics_for?(diagnostics, Foo, :bar, 0)
+        refute find_diagnostics_for(diagnostics, Foo, :bar, 0)
         refute output =~ "Foo.bar/0 is unused"
       end)
     end
@@ -37,7 +68,7 @@ defmodule MixUnusedTest do
         assert {{:ok, diagnostics}, output} = run(:unclean, "compile")
 
         assert output =~ "Foo.foo/0 is unused"
-        assert has_diagnostics_for?(diagnostics, Foo, :foo, 0)
+        assert find_diagnostics_for(diagnostics, Foo, :foo, 0)
       end)
     end
   end
@@ -46,8 +77,8 @@ defmodule MixUnusedTest do
     test "when recompiling it inform about unused module" do
       in_fixture("two_mods", fn ->
         assert {{:ok, diagnostics}, output} = run(:two_mods, "compile")
-        assert has_diagnostics_for?(diagnostics, Foo, :foo, 0)
-        refute has_diagnostics_for?(diagnostics, Foo, :bar, 0), output
+        assert find_diagnostics_for(diagnostics, Foo, :foo, 0)
+        refute find_diagnostics_for(diagnostics, Foo, :bar, 0), output
 
         Mix.Task.clear()
 
@@ -58,17 +89,17 @@ defmodule MixUnusedTest do
         File.write!("lib/foo.ex", content)
 
         assert {{:ok, diagnostics}, _} = run(:two_mods, "compile")
-        assert has_diagnostics_for?(diagnostics, Foo, :foo, 0)
-        refute has_diagnostics_for?(diagnostics, Foo, :bar, 0)
+        assert find_diagnostics_for(diagnostics, Foo, :foo, 0)
+        refute find_diagnostics_for(diagnostics, Foo, :bar, 0)
       end)
     end
   end
 
-  defp run(project, task) do
+  defp run(project, task, args \\ []) do
     Mix.Project.in_project(project, ".", fn _ ->
       captured =
         capture_io(fn ->
-          send(self(), {:task, Mix.Task.run(task)})
+          send(self(), {:task, Mix.Task.run(task, args)})
         end)
 
       send(self(), {:io, captured})
@@ -80,7 +111,7 @@ defmodule MixUnusedTest do
     {result, output}
   end
 
-  defp has_diagnostics_for?(diagnostics, m, f, a) do
-    Enum.any?(diagnostics, &(&1.message =~ "#{inspect(m)}.#{f}/#{a}"))
+  defp find_diagnostics_for(diagnostics, m, f, a) do
+    Enum.find(diagnostics, &(&1.message =~ "#{inspect(m)}.#{f}/#{a}"))
   end
 end

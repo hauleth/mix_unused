@@ -77,7 +77,8 @@ defmodule Mix.Tasks.Compile.Unused do
   @manifest "unused.manifest"
 
   @options [
-    severity: :string
+    severity: :string,
+    warnings_as_errors: :boolean
   ]
 
   alias MixUnused.Tracer
@@ -122,6 +123,7 @@ defmodule Mix.Tasks.Compile.Unused do
     data = Map.merge(cache, Tracer.get_data())
     calls = Enum.flat_map(data, fn {_key, value} -> value end)
     severity = Keyword.get(opts, :severity, "hint") |> severity()
+    warnings_as_errors = Keyword.get(opts, :warnings_as_errors, false)
 
     File.write!(manifest, :erlang.term_to_binary(data))
 
@@ -146,7 +148,19 @@ defmodule Mix.Tasks.Compile.Unused do
         |> print_diagnostic()
       end
 
-    {status, messages ++ diagnostics}
+    case {messages, severity, warnings_as_errors} do
+      {[], _, _} ->
+        {status, diagnostics}
+
+      {messages, :error, _} ->
+        {:error, messages ++ diagnostics}
+
+      {messages, :warning, true} ->
+        {:error, messages ++ diagnostics}
+
+      {messages, _, _} ->
+        {status, messages ++ diagnostics}
+    end
   end
 
   defp all_functions(app) do
