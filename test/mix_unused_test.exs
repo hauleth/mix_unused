@@ -51,6 +51,20 @@ defmodule MixUnusedTest do
         assert {{:ok, []}, _} = run(:clean, "compile")
       end)
     end
+
+    test "exit if severity is set to error" do
+      in_fixture("clean", fn ->
+        assert {{:ok, []}, _} =
+                   run(:clean, "compile", ~w[--severity error])
+      end)
+    end
+
+    test "exit if severity is warning and `--warnings-as-errors is used`" do
+      in_fixture("clean", fn ->
+        assert {{:ok, []}, _} =
+                   run(:clean, "compile", ~w[--severity warning --warnings-as-errors])
+      end)
+    end
   end
 
   describe "unclean" do
@@ -69,6 +83,37 @@ defmodule MixUnusedTest do
 
         assert output =~ "Foo.foo/0 is unused"
         assert find_diagnostics_for(diagnostics, Foo, :foo, 0)
+      end)
+    end
+
+    test "exit if severity is set to error" do
+      in_fixture("unclean", fn ->
+        assert {:shutdown, 1} = catch_exit(run(:unclean, "compile", ~w[--severity error]))
+      end)
+    end
+
+    test "accepts severity option" do
+      in_fixture("unclean", fn ->
+        assert {{:ok, diagnostics}, _} = run(:unclean, "compile", ~w[--severity info])
+
+        assert %{severity: :information} = find_diagnostics_for(diagnostics, Foo, :foo, 0)
+      end)
+    end
+
+    test "warns on warning severity" do
+      in_fixture("unclean", fn ->
+        assert {{:ok, diagnostics}, _} = run(:unclean, "compile", ~w[--severity warning])
+
+        assert %{severity: :warning} = find_diagnostics_for(diagnostics, Foo, :foo, 0)
+      end)
+    end
+
+    test "exit if severity is warning and `--warnings-as-errors is used`" do
+      in_fixture("unclean", fn ->
+        assert {:shutdown, 1}
+                 catch_exit(
+                   run(:unclean, "compile", ~w[--severity warning --warnings-as-errors])
+                 )
       end)
     end
   end
