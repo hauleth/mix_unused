@@ -1,6 +1,9 @@
 <a name="unreleased"></a>
 ## [Unreleased]
 
+
+<a name="v0.2.1"></a>
+## [v0.2.1] - 2021-10-13
 ### Bug Fixes
 - properly fail when the severity is high enough ([`762ae41`](https://github.com/hauleth/mix_unused/commit/762ae41361bae297b10b431ffc6e31e69d9978e8))
 - relicense to MIT ([`ab8eeea`](https://github.com/hauleth/mix_unused/commit/ab8eeea5d7e2b4d98de85e3c51855bebc7d66058))
@@ -44,5 +47,6 @@
 - add module.behaviour_info/1 to list of ignored built ins ([`df2f7e2`](https://github.com/hauleth/mix_unused/commit/df2f7e2209f5ee229d9c3c5efe3ee5c9b40f3261))
 
 
-[Unreleased]: https://github.com/hauleth/mix_unused/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/hauleth/mix_unused/compare/v0.2.1...HEAD
+[v0.2.1]: https://github.com/hauleth/mix_unused/compare/v0.2.0...v0.2.1
 [v0.2.0]: https://github.com/hauleth/mix_unused/compare/v0.1.0...v0.2.0
