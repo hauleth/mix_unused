@@ -2,9 +2,13 @@
 ## [Unreleased]
 
 ### Bug Fixes
+- properly fail when the severity is high enough
 - relicense to MIT
 - older Erlang versions do not provide doc chunk
 - use documentation chunk for extracting callbacks
+
+### Documentation
+- fix escaping in the task documentation
 
 
 <a name="v0.2.0"></a>
