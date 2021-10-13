@@ -2,13 +2,13 @@
 ## [Unreleased]
 
 ### Bug Fixes
-- properly fail when the severity is high enough
-- relicense to MIT
-- older Erlang versions do not provide doc chunk
-- use documentation chunk for extracting callbacks
+- properly fail when the severity is high enough ([`762ae41`](https://github.com/hauleth/mix_unused/commit/762ae41361bae297b10b431ffc6e31e69d9978e8))
+- relicense to MIT ([`ab8eeea`](https://github.com/hauleth/mix_unused/commit/ab8eeea5d7e2b4d98de85e3c51855bebc7d66058))
+- older Erlang versions do not provide doc chunk ([`fc087eb`](https://github.com/hauleth/mix_unused/commit/fc087eb99fcce0fcab3646965e9e28c4507030a4))
+- use documentation chunk for extracting callbacks ([`6f7b14e`](https://github.com/hauleth/mix_unused/commit/6f7b14e9fe134b6d1e78b5cca5eb8a8a1df6de40))
 
 ### Documentation
-- fix escaping in the task documentation
+- fix escaping in the task documentation ([`d5dce78`](https://github.com/hauleth/mix_unused/commit/d5dce78446efb43e7490811db03d957e25a9e228))
 
 
 <a name="v0.2.0"></a>
