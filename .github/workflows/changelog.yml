@@ -23,4 +23,5 @@ jobs:
         git config user.email ""
         git config user.name "GitHub Action Bot"
         git diff -- CHANGELOG.md
-        git commit -m "chore: update CHANGELOG [skip ci]" CHANGELOG.md && git push origin master || true
+        git add CHANGELOG.md
+        git commit -m "chore: update CHANGELOG [skip ci]" && git push origin master || true
