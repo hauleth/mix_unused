@@ -3,7 +3,7 @@ defmodule Mix.Tasks.Compile.Unused do
 
   @shortdoc "Find unused public functions"
 
-  @moduledoc """
+  @moduledoc ~S"""
   Compile project and find uncalled public functions.
 
   ### Warning
