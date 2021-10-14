@@ -48,3 +48,5 @@ jobs:
         fetch-depth: 0
         ref: ${{ github.event.pull_request.head.sha }}
     - uses: actions/labeler@v3
+      with:
+        repo-token: "${{ secrets.GITHUB_TOKEN }}"
