@@ -151,4 +151,14 @@ defmodule MixUnused.TracerTest do
   test "contains infromation about remote calls using dynamic module attributes" do
     assert {Remote, :foo, 0} in @subject.get_calls()
   end
+
+  @code (quote do
+           def test do
+             %MapSet{}
+           end
+         end)
+  test "struct expansion add macros for struct" do
+    assert {MapSet, :__struct__, 0} in @subject.get_calls()
+    assert {MapSet, :__struct__, 1} in @subject.get_calls()
+  end
 end

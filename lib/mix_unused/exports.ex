@@ -8,6 +8,12 @@ defmodule MixUnused.Exports do
 
   @types ~w[function macro]a
 
+  @ignored [
+    # It is created automatically by `defstruct` and it is (almost?) never used
+    # directly. Instead we will look for expansions in form of `%module{}`
+    {:__struct__, 1}
+  ]
+
   @spec fetch(module()) :: [{mfa(), metadata()}]
   def fetch(module) do
     # Check exported functions without loading modules as this could cause
@@ -18,11 +24,12 @@ defmodule MixUnused.Exports do
       callbacks = data[:attributes] |> Keyword.get(:behaviour, []) |> callbacks()
       source = data[:compile_info] |> Keyword.get(:source, "nofile") |> to_string()
 
-      for {{type, name, arity}, anno, _sig, _doc, meta} when type in @types <- docs,
+      for {{type, name, arity}, anno, [sig | _], _doc, meta} when type in @types <- docs,
           not Map.get(meta, :export, false),
+          {name, arity} not in @ignored,
           {name, arity} not in callbacks do
         line = :erl_anno.line(anno)
-        {{module, name, arity}, %{file: source, line: line}}
+        {{module, name, arity}, %{signature: sig, file: source, line: line}}
       end
     else
       _ -> []
