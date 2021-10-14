@@ -4,6 +4,9 @@
 ### Documentation
 - add doctest that shows we can ignore based pattern match for the module ([#12](https://github.com/hauleth/mix_unused/issues/12)) ([`786d0ec`](https://github.com/hauleth/mix_unused/commit/786d0ec794e0116c61af9a118824c72b862b671d))
 
+### Features
+- detect unused structs ([`179201c`](https://github.com/hauleth/mix_unused/commit/179201cea1f34e49ec850737396602bb42c68148))
+
 
 <a name="v0.2.1"></a>
 ## [v0.2.1] - 2021-10-13
