@@ -69,6 +69,18 @@ defmodule MixUnused.Filter do
   []
   ```
 
+  Allow pattern matching module as well:
+
+  ```
+  iex> functions = %{
+  ...>   {Foo, :bar, 1} => %{},
+  ...>   {Foo.Bar, :baz, 1} => %{}
+  ...> }
+  iex> patterns = [{~r/Foo\..*$/, ~r/^ba[rz]$/}]
+  iex> #{inspect(__MODULE__)}.reject_matching(functions, patterns)
+  [{{Foo, :bar, 1}, %{}}]
+  ```
+
   For arity you can pass range:
 
   ```
