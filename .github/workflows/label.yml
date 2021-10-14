@@ -61,6 +61,8 @@ jobs:
               repo: context.repo.repo,
               issue_number: issue_number,
               labels: labels.failure
+            }).catch((e) => {
+              console.error(`Cannot add labels ${labels}: ${e.message}`)
             })
           }
           for (const label of labels.success) {
@@ -69,5 +71,7 @@ jobs:
               repo: context.repo.repo,
               issue_number: issue_number,
               name: label
+            }).catch((e) => {
+              console.error(`Cannot remove label ${label}: ${e.message}`)
             })
           }
