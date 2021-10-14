@@ -72,6 +72,8 @@ defmodule Mix.Tasks.Compile.Unused do
     Other allowed levels are `information`, `warning`, and `error`.
   """
 
+  alias Mix.Task.Compiler.Diagnostic
+
   @recursive true
 
   @manifest "unused.manifest"
@@ -137,15 +139,19 @@ defmodule Mix.Tasks.Compile.Unused do
     :ok = Tracer.stop()
 
     messages =
-      for {{m, f, a}, meta} <- unused do
-        %Mix.Task.Compiler.Diagnostic{
+      for {{m, f, a}, meta} = desc <- unused do
+        %Diagnostic{
           compiler_name: "unused",
-          message: "#{inspect(m)}.#{f}/#{a} is unused",
+          message: message(desc),
           severity: severity,
           position: meta.line,
-          file: meta.file
+          file: meta.file,
+          details: %{
+            mfa: {m, f, a},
+            signature: meta.signature
+          }
         }
-        |> print_diagnostic()
+        |> _tap(&print_diagnostic/1)
       end
 
     case {messages, severity, warnings_as_errors} do
@@ -185,6 +191,9 @@ defmodule Mix.Tasks.Compile.Unused do
   defp severity("warning"), do: :warning
   defp severity("error"), do: :error
 
+  defp print_diagnostic(%Diagnostic{details: %{mfa: {_, :__struct__, 1}}}),
+    do: nil
+
   defp print_diagnostic(diag) do
     file = Path.relative_to_cwd(diag.file)
 
@@ -197,8 +206,21 @@ defmodule Mix.Tasks.Compile.Unused do
       Integer.to_string(diag.position),
       "\n"
     ])
+  end
 
-    diag
+  defp message({{_, :__struct__, 0}, meta}) do
+    "#{meta.signature} is unused"
+  end
+
+  defp message({{m, f, a}, _meta}) do
+    "#{inspect(m)}.#{f}/#{a} is unused"
+  end
+
+  # Elixir < 1.12 do not have tap, so we provide custom implementation
+  defp _tap(val, fun) do
+    fun.(val)
+
+    val
   end
 
   defp level(level), do: [:bright, color(level), "#{level}: ", :reset]

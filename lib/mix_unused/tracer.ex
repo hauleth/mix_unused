@@ -45,6 +45,13 @@ defmodule MixUnused.Tracer do
     :ok
   end
 
+  def trace({:struct_expansion, _meta, module, _keys}, env) do
+    add_call(module, :__struct__, 0, env)
+    add_call(module, :__struct__, 1, env)
+
+    :ok
+  end
+
   def trace(_event, _env), do: :ok
 
   @spec add_call(module(), atom(), arity(), Macro.Env.t()) :: :ok

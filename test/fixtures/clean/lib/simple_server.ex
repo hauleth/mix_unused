@@ -5,7 +5,7 @@ defmodule SimpleServer do
 
   def init(_), do: {:ok, []}
 
-  def handle_call(_msg, _ref, state), do: {:reply, :ok, state}
+  def handle_call(%SimpleStruct{}, _ref, state), do: {:reply, :ok, state}
 
   def handle_cast(_msg, state), do: {:noreply, state}
 end

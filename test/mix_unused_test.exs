@@ -38,9 +38,7 @@ defmodule MixUnusedTest do
     test "exit if severity is warning and `--warnings-as-errors is used`" do
       in_fixture("umbrella", fn ->
         assert {:shutdown, 1}
-                 catch_exit(
-                   run(:umbrella, "compile", ~w[--severity warning --warnings-as-errors])
-                 )
+        catch_exit(run(:umbrella, "compile", ~w[--severity warning --warnings-as-errors]))
       end)
     end
   end
@@ -54,15 +52,14 @@ defmodule MixUnusedTest do
 
     test "exit if severity is set to error" do
       in_fixture("clean", fn ->
-        assert {{:ok, []}, _} =
-                   run(:clean, "compile", ~w[--severity error])
+        assert {{:ok, []}, _} = run(:clean, "compile", ~w[--severity error])
       end)
     end
 
     test "exit if severity is warning and `--warnings-as-errors is used`" do
       in_fixture("clean", fn ->
         assert {{:ok, []}, _} =
-                   run(:clean, "compile", ~w[--severity warning --warnings-as-errors])
+                 run(:clean, "compile", ~w[--severity warning --warnings-as-errors])
       end)
     end
   end
@@ -83,6 +80,15 @@ defmodule MixUnusedTest do
 
         assert output =~ "Foo.foo/0 is unused"
         assert find_diagnostics_for(diagnostics, Foo, :foo, 0)
+      end)
+    end
+
+    test "unused struct is reported" do
+      in_fixture("unclean", fn ->
+        assert {{:ok, diagnostics}, output} = run(:unclean, "compile")
+
+        assert output =~ "%Bar{} is unused"
+        assert find_diagnostics_for(diagnostics, Bar, :__struct__, 0)
       end)
     end
 
@@ -111,9 +117,7 @@ defmodule MixUnusedTest do
     test "exit if severity is warning and `--warnings-as-errors is used`" do
       in_fixture("unclean", fn ->
         assert {:shutdown, 1}
-                 catch_exit(
-                   run(:unclean, "compile", ~w[--severity warning --warnings-as-errors])
-                 )
+        catch_exit(run(:unclean, "compile", ~w[--severity warning --warnings-as-errors]))
       end)
     end
   end
@@ -157,6 +161,6 @@ defmodule MixUnusedTest do
   end
 
   defp find_diagnostics_for(diagnostics, m, f, a) do
-    Enum.find(diagnostics, &(&1.message =~ "#{inspect(m)}.#{f}/#{a}"))
+    Enum.find(diagnostics, &(&1.details.mfa == {m, f, a}))
   end
 end
