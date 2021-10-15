@@ -2,6 +2,7 @@
 ## [Unreleased]
 
 ### Documentation
+- describe how to ignore the structs and how to use metadata ([`d0fcd29`](https://github.com/hauleth/mix_unused/commit/d0fcd29aa89ea47c0a93b65ad03ca929703e9009))
 - add doctest that shows we can ignore based pattern match for the module ([#12](https://github.com/hauleth/mix_unused/issues/12)) ([`786d0ec`](https://github.com/hauleth/mix_unused/commit/786d0ec794e0116c61af9a118824c72b862b671d))
 
 ### Features
