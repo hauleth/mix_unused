@@ -66,10 +66,21 @@ defmodule Mix.Tasks.Compile.Unused do
   want to ignore whole module, then you can just use `Foo` (it also works for
   regular expressions).
 
+  To ignore warnings about unused structs you need to use "special" syntax in
+  form of `{StructModule, :__struct__, 0}`.
+
+  ### Documentation metadata
+
+  Functions that have `export: true` in their metadata will be automatically
+  treated as exports for usage by external parties and will not be marked as
+  unused.
+
   ## Options
 
   - `severity` - severity of the reported messages, defaults to `hint`.
     Other allowed levels are `information`, `warning`, and `error`.
+  - `warnings-as-errors` - if the `severity` is set to `:warning` and there is
+    any report, then fail compilation with exit code `1`.
   """
 
   alias Mix.Task.Compiler.Diagnostic
