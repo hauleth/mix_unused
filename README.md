@@ -7,7 +7,7 @@ Mix compiler tracer for detecting unused public functions.
 ```elixir
 def deps do
   [
-    {:mix_unused, "~> 0.2.0"}
+    {:mix_unused, "~> 0.3.0"}
   ]
 end
 ```
