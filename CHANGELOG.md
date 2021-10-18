@@ -1,6 +1,10 @@
 <a name="unreleased"></a>
 ## [Unreleased]
 
+### Bug Fixes
+- do not stop tracer process after compilation ([`fbf7270`](https://github.com/hauleth/mix_unused/commit/fbf7270ff1ba81d342993e517d7c8e4829e85e8d))
+- do not reload application configuration ([`7c1f7b8`](https://github.com/hauleth/mix_unused/commit/7c1f7b8689e7eef656b350bdac412729dd2efed6))
+
 ### Documentation
 - describe how to ignore the structs and how to use metadata ([`d0fcd29`](https://github.com/hauleth/mix_unused/commit/d0fcd29aa89ea47c0a93b65ad03ca929703e9009))
 - add doctest that shows we can ignore based pattern match for the module ([#12](https://github.com/hauleth/mix_unused/issues/12)) ([`786d0ec`](https://github.com/hauleth/mix_unused/commit/786d0ec794e0116c61af9a118824c72b862b671d))
