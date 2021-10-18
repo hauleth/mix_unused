@@ -1,6 +1,9 @@
 <a name="unreleased"></a>
 ## [Unreleased]
 
+
+<a name="v0.3.0"></a>
+## [v0.3.0] - 2021-10-18
 ### Bug Fixes
 - do not stop tracer process after compilation ([`fbf7270`](https://github.com/hauleth/mix_unused/commit/fbf7270ff1ba81d342993e517d7c8e4829e85e8d))
 - do not reload application configuration ([`7c1f7b8`](https://github.com/hauleth/mix_unused/commit/7c1f7b8689e7eef656b350bdac412729dd2efed6))
@@ -58,6 +61,7 @@
 - add module.behaviour_info/1 to list of ignored built ins ([`df2f7e2`](https://github.com/hauleth/mix_unused/commit/df2f7e2209f5ee229d9c3c5efe3ee5c9b40f3261))
 
 
-[Unreleased]: https://github.com/hauleth/mix_unused/compare/v0.2.1...HEAD
+[Unreleased]: https://github.com/hauleth/mix_unused/compare/v0.3.0...HEAD
+[v0.3.0]: https://github.com/hauleth/mix_unused/compare/v0.2.1...v0.3.0
 [v0.2.1]: https://github.com/hauleth/mix_unused/compare/v0.2.0...v0.2.1
 [v0.2.0]: https://github.com/hauleth/mix_unused/compare/v0.1.0...v0.2.0
