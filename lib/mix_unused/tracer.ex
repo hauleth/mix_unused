@@ -16,7 +16,17 @@ defmodule MixUnused.Tracer do
 
   @doc false
   def start_link() do
-    GenServer.start_link(__MODULE__, [], name: __MODULE__)
+    case GenServer.start_link(__MODULE__, [], name: __MODULE__) do
+      {:ok, _pid} = ret ->
+        ret
+
+      {:error, {:already_started, pid}} ->
+        :ets.delete_all_objects(@tab)
+        {:ok, pid}
+
+      other ->
+        other
+    end
   end
 
   @remote ~w[
@@ -75,15 +85,10 @@ defmodule MixUnused.Tracer do
     :ets.select(@tab, [{{{:_, :"$1"}, :_}, [], [:"$1"]}])
   end
 
-  def stop, do: GenServer.call(__MODULE__, :stop)
-
   @impl true
   def init(_args) do
     _ = :ets.new(@tab, [:public, :named_table, :set, {:write_concurrency, true}])
 
     {:ok, []}
   end
-
-  @impl true
-  def handle_call(:stop, _, state), do: {:stop, :normal, :ok, state}
 end

@@ -147,8 +147,6 @@ defmodule Mix.Tasks.Compile.Unused do
       |> Filter.reject_matching(ignores(config))
       |> Enum.sort()
 
-    :ok = Tracer.stop()
-
     messages =
       for {{m, f, a}, meta} = desc <- unused do
         %Diagnostic{
