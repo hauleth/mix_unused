@@ -181,8 +181,7 @@ defmodule Mix.Tasks.Compile.Unused do
   end
 
   defp all_functions(app) do
-    _ = Application.unload(app)
-    :ok = Application.load(app)
+    _ = Application.load(app)
 
     Application.spec(app, :modules)
     |> Enum.flat_map(&Exports.fetch/1)
