@@ -126,7 +126,7 @@ defmodule MixUnused.TracerTest do
              @attr.foo()
            end
          end)
-  test "contains infromation about remote calls using module attributes" do
+  test "contains information about remote calls using module attributes" do
     assert {Remote, :foo, 0} in @subject.get_calls()
   end
 
@@ -137,7 +137,7 @@ defmodule MixUnused.TracerTest do
              @attr.foo()
            end
          end)
-  test "contains infromation about remote calls using dynamic module attributes (default)" do
+  test "contains information about remote calls using dynamic module attributes (default)" do
     assert {Remote, :foo, 0} in @subject.get_calls()
   end
 
@@ -148,7 +148,7 @@ defmodule MixUnused.TracerTest do
              @attr.foo()
            end
          end)
-  test "contains infromation about remote calls using dynamic module attributes" do
+  test "contains information about remote calls using dynamic module attributes" do
     assert {Remote, :foo, 0} in @subject.get_calls()
   end
 
