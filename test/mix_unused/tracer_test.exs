@@ -60,7 +60,8 @@ defmodule MixUnused.TracerTest do
 
            def foo(), do: :ok
          end)
-  test "contains information about function returned by remote reference", ctx do
+  test "contains information about function returned by remote reference",
+       ctx do
     assert {ctx.module_name, :foo, 0} in @subject.get_calls()
   end
 

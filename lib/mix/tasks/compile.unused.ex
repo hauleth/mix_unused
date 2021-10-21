@@ -89,40 +89,37 @@ defmodule Mix.Tasks.Compile.Unused do
 
   @manifest "unused.manifest"
 
-  @options [
-    severity: :string,
-    warnings_as_errors: :boolean
-  ]
-
   alias MixUnused.Tracer
   alias MixUnused.Filter
   alias MixUnused.Exports
 
   @impl true
   def run(argv) do
-    {opts, _rest, _other} = OptionParser.parse(argv, strict: @options)
     {:ok, _pid} = Tracer.start_link()
+
+    mix_config = Mix.Project.config()
+    config = MixUnused.Config.build(argv, Keyword.get(mix_config, :unused, []))
+    tracers = Code.get_compiler_option(:tracers)
 
     [manifest] = manifests()
 
-    tracers = Code.get_compiler_option(:tracers)
-    Mix.Task.Compiler.after_compiler(:app, &after_compiler(&1, tracers, opts, manifest))
+    Mix.Task.Compiler.after_compiler(
+      :app,
+      &after_compiler(&1, mix_config[:app], tracers, config, manifest)
+    )
+
     Code.put_compiler_option(:tracers, [Tracer | tracers])
 
     {:ok, []}
   end
 
   @impl true
-  def manifests do
-    [Path.join(Mix.Project.manifest_path(), @manifest)]
-  end
+  def manifests, do: [Path.join(Mix.Project.manifest_path(), @manifest)]
 
   @impl true
-  def clean do
-    Enum.each(manifests(), &File.rm/1)
-  end
+  def clean, do: Enum.each(manifests(), &File.rm/1)
 
-  defp after_compiler({status, diagnostics}, tracers, opts, manifest) do
+  defp after_compiler({status, diagnostics}, app, tracers, config, manifest) do
     # Cleanup tracers after compilation
     Code.put_compiler_option(:tracers, tracers)
 
@@ -132,72 +129,33 @@ defmodule Mix.Tasks.Compile.Unused do
         _ -> %{}
       end
 
-    config = Mix.Project.config()
     data = Map.merge(cache, Tracer.get_data())
-    calls = Enum.flat_map(data, fn {_key, value} -> value end)
-    severity = Keyword.get(opts, :severity, "hint") |> severity()
-    warnings_as_errors = Keyword.get(opts, :warnings_as_errors, false)
+    _ = File.write!(manifest, :erlang.term_to_binary(data))
 
-    File.write!(manifest, :erlang.term_to_binary(data))
+    all_functions =
+      app
+      |> Exports.application()
+      |> Filter.reject_matching(config.ignore)
 
-    unused =
-      config[:app]
-      |> all_functions()
-      |> Map.drop(calls)
-      |> Filter.reject_matching(ignores(config))
-      |> Enum.sort()
+    error_on_messages =
+      config.severity == :error or
+        (config.severity == :warning and config.warnings_as_errors)
 
-    messages =
-      for {{m, f, a}, meta} = desc <- unused do
-        %Diagnostic{
-          compiler_name: "unused",
-          message: message(desc),
-          severity: severity,
-          position: meta.line,
-          file: meta.file,
-          details: %{
-            mfa: {m, f, a},
-            signature: meta.signature
-          }
-        }
-        |> _tap(&print_diagnostic/1)
-      end
-
-    case {messages, severity, warnings_as_errors} do
-      {[], _, _} ->
+    config.checks
+    |> MixUnused.Analyze.analyze(data, all_functions, config)
+    |> Enum.sort()
+    |> tap_all(&print_diagnostic/1)
+    |> case do
+      [] ->
         {status, diagnostics}
 
-      {messages, :error, _} ->
+      messages when error_on_messages ->
         {:error, messages ++ diagnostics}
 
-      {messages, :warning, true} ->
-        {:error, messages ++ diagnostics}
-
-      {messages, _, _} ->
+      messages ->
         {status, messages ++ diagnostics}
     end
   end
-
-  defp all_functions(app) do
-    _ = Application.load(app)
-
-    Application.spec(app, :modules)
-    |> Enum.flat_map(&Exports.fetch/1)
-    |> Map.new()
-  end
-
-  defp ignores(config) do
-    config
-    |> Keyword.get(:unused, [])
-    |> Keyword.get(:ignore, [])
-  end
-
-  defp severity("hint"), do: :hint
-  defp severity("info"), do: :information
-  defp severity("information"), do: :information
-  defp severity("warn"), do: :warning
-  defp severity("warning"), do: :warning
-  defp severity("error"), do: :error
 
   defp print_diagnostic(%Diagnostic{details: %{mfa: {_, :__struct__, 1}}}),
     do: nil
@@ -216,19 +174,11 @@ defmodule Mix.Tasks.Compile.Unused do
     ])
   end
 
-  defp message({{_, :__struct__, 0}, meta}) do
-    "#{meta.signature} is unused"
-  end
-
-  defp message({{m, f, a}, _meta}) do
-    "#{inspect(m)}.#{f}/#{a} is unused"
-  end
-
   # Elixir < 1.12 do not have tap, so we provide custom implementation
-  defp _tap(val, fun) do
-    fun.(val)
+  defp tap_all(list, fun) do
+    Enum.each(list, fun)
 
-    val
+    list
   end
 
   defp level(level), do: [:bright, color(level), "#{level}: ", :reset]
