@@ -1,3 +1,10 @@
+<!--
+This is file is generated automatically from Git history, do not edit!
+If you want to test your changes to the template then use git-chglog
+
+https://github.com/git-chglog/git-chglog
+-->
+
 # Changelog
 
 All notable changes to this project will be documented in this file.
