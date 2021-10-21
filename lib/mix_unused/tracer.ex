@@ -75,9 +75,7 @@ defmodule MixUnused.Tracer do
   def get_data do
     @tab
     |> :ets.select([{{:"$1", :_}, [], [:"$1"]}])
-    |> Enum.reduce(%{}, fn {mod, mfa}, acc ->
-      Map.update(acc, mod, [mfa], &[mfa | &1])
-    end)
+    |> Enum.group_by(&elem(&1, 0), &elem(&1, 1))
   end
 
   @spec get_calls() :: [mfa()]
@@ -87,7 +85,8 @@ defmodule MixUnused.Tracer do
 
   @impl true
   def init(_args) do
-    _ = :ets.new(@tab, [:public, :named_table, :set, {:write_concurrency, true}])
+    _ =
+      :ets.new(@tab, [:public, :named_table, :set, {:write_concurrency, true}])
 
     {:ok, []}
   end

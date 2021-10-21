@@ -15,30 +15,38 @@ defmodule MixUnusedTest do
 
     test "exit if severity is set to error" do
       in_fixture("umbrella", fn ->
-        assert {:shutdown, 1} = catch_exit(run(:umbrella, "compile", ~w[--severity error]))
+        assert {:shutdown, 1} =
+                 catch_exit(run(:umbrella, "compile", ~w[--severity error]))
       end)
     end
 
     test "accepts severity option" do
       in_fixture("umbrella", fn ->
-        assert {{:ok, diagnostics}, _} = run(:umbrella, "compile", ~w[--severity info])
+        assert {{:ok, diagnostics}, _} =
+                 run(:umbrella, "compile", ~w[--severity info])
 
-        assert %{severity: :information} = find_diagnostics_for(diagnostics, ModuleA, :foo, 0)
+        assert %{severity: :information} =
+                 find_diagnostics_for(diagnostics, ModuleA, :foo, 0)
       end)
     end
 
     test "warns on warning severity" do
       in_fixture("umbrella", fn ->
-        assert {{:ok, diagnostics}, _} = run(:umbrella, "compile", ~w[--severity warning])
+        assert {{:ok, diagnostics}, _} =
+                 run(:umbrella, "compile", ~w[--severity warning])
 
-        assert %{severity: :warning} = find_diagnostics_for(diagnostics, ModuleA, :foo, 0)
+        assert %{severity: :warning} =
+                 find_diagnostics_for(diagnostics, ModuleA, :foo, 0)
       end)
     end
 
     test "exit if severity is warning and `--warnings-as-errors is used`" do
       in_fixture("umbrella", fn ->
         assert {:shutdown, 1}
-        catch_exit(run(:umbrella, "compile", ~w[--severity warning --warnings-as-errors]))
+
+        catch_exit(
+          run(:umbrella, "compile", ~w[--severity warning --warnings-as-errors])
+        )
       end)
     end
   end
@@ -59,7 +67,11 @@ defmodule MixUnusedTest do
     test "exit if severity is warning and `--warnings-as-errors is used`" do
       in_fixture("clean", fn ->
         assert {{:ok, []}, _} =
-                 run(:clean, "compile", ~w[--severity warning --warnings-as-errors])
+                 run(
+                   :clean,
+                   "compile",
+                   ~w[--severity warning --warnings-as-errors]
+                 )
       end)
     end
   end
@@ -94,30 +106,38 @@ defmodule MixUnusedTest do
 
     test "exit if severity is set to error" do
       in_fixture("unclean", fn ->
-        assert {:shutdown, 1} = catch_exit(run(:unclean, "compile", ~w[--severity error]))
+        assert {:shutdown, 1} =
+                 catch_exit(run(:unclean, "compile", ~w[--severity error]))
       end)
     end
 
     test "accepts severity option" do
       in_fixture("unclean", fn ->
-        assert {{:ok, diagnostics}, _} = run(:unclean, "compile", ~w[--severity info])
+        assert {{:ok, diagnostics}, _} =
+                 run(:unclean, "compile", ~w[--severity info])
 
-        assert %{severity: :information} = find_diagnostics_for(diagnostics, Foo, :foo, 0)
+        assert %{severity: :information} =
+                 find_diagnostics_for(diagnostics, Foo, :foo, 0)
       end)
     end
 
     test "warns on warning severity" do
       in_fixture("unclean", fn ->
-        assert {{:ok, diagnostics}, _} = run(:unclean, "compile", ~w[--severity warning])
+        assert {{:ok, diagnostics}, _} =
+                 run(:unclean, "compile", ~w[--severity warning])
 
-        assert %{severity: :warning} = find_diagnostics_for(diagnostics, Foo, :foo, 0)
+        assert %{severity: :warning} =
+                 find_diagnostics_for(diagnostics, Foo, :foo, 0)
       end)
     end
 
     test "exit if severity is warning and `--warnings-as-errors is used`" do
       in_fixture("unclean", fn ->
         assert {:shutdown, 1}
-        catch_exit(run(:unclean, "compile", ~w[--severity warning --warnings-as-errors]))
+
+        catch_exit(
+          run(:unclean, "compile", ~w[--severity warning --warnings-as-errors])
+        )
       end)
     end
   end

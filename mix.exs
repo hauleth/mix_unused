@@ -25,7 +25,7 @@ defmodule MixUnused.MixProject do
       docs: [
         extras: [
           "CHANGELOG.md": [],
-          "LICENSE": [title: "License"],
+          LICENSE: [title: "License"],
           "README.md": [title: "Overview"]
         ],
         # main: "Mix.Tasks.Compile.Unused",

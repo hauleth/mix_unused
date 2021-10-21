@@ -3,7 +3,10 @@ defmodule MixUnused.Exports do
 
   @type t() :: %{mfa() => metadata()} | [{mfa(), metadata()}]
   @type metadata() :: %{
-          file: String.t()
+          signature: String.t(),
+          file: String.t(),
+          line: non_neg_integer(),
+          doc_meta: map()
         }
 
   @types ~w[function macro]a
@@ -14,22 +17,37 @@ defmodule MixUnused.Exports do
     {:__struct__, 1}
   ]
 
+  def application(name) do
+    _ = Application.load(name)
+
+    name
+    |> Application.spec(:modules)
+    |> Enum.flat_map(&fetch/1)
+    |> Map.new()
+  end
+
   @spec fetch(module()) :: [{mfa(), metadata()}]
   def fetch(module) do
     # Check exported functions without loading modules as this could cause
     # unexpected behaviours in case of `on_load` callbacks
     with path when is_list(path) <- :code.which(module),
-         {:ok, {^module, data}} <- :beam_lib.chunks(path, [:attributes, :compile_info]),
-         {_hidden, _meta, docs} <- fetch_docs(to_string(path)) do
-      callbacks = data[:attributes] |> Keyword.get(:behaviour, []) |> callbacks()
-      source = data[:compile_info] |> Keyword.get(:source, "nofile") |> to_string()
+         {:ok, {^module, data}} <-
+           :beam_lib.chunks(path, [:attributes, :compile_info]),
+         {_hidden?, _meta, docs} <- fetch_docs(to_string(path)) do
+      callbacks =
+        data[:attributes] |> Keyword.get(:behaviour, []) |> callbacks()
 
-      for {{type, name, arity}, anno, [sig | _], _doc, meta} when type in @types <- docs,
-          not Map.get(meta, :export, false),
+      source =
+        data[:compile_info] |> Keyword.get(:source, "nofile") |> to_string()
+
+      for {{type, name, arity}, anno, [sig | _], _doc, meta} <- docs,
+          type in @types,
           {name, arity} not in @ignored,
           {name, arity} not in callbacks do
         line = :erl_anno.line(anno)
-        {{module, name, arity}, %{signature: sig, file: source, line: line}}
+
+        {{module, name, arity},
+         %{signature: sig, file: source, line: line, doc_meta: meta}}
       end
     else
       _ -> []

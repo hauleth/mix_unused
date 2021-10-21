@@ -68,7 +68,11 @@ defmodule MixUnused.Case do
     tmp = Path.join(module, function)
 
     quote do
-      unquote(__MODULE__).in_fixture(unquote(which), unquote(tmp), unquote(block))
+      unquote(__MODULE__).in_fixture(
+        unquote(which),
+        unquote(tmp),
+        unquote(block)
+      )
     end
   end
 
@@ -98,6 +102,9 @@ defmodule MixUnused.Case do
 
   defp delete_tmp_paths do
     tmp = tmp_path() |> String.to_charlist()
-    for path <- :code.get_path(), :string.str(path, tmp) != 0, do: :code.del_path(path)
+
+    for path <- :code.get_path(),
+        :string.str(path, tmp) != 0,
+        do: :code.del_path(path)
   end
 end
