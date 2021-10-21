@@ -52,7 +52,7 @@ defmodule Mix.Tasks.Compile.Unused do
   should add it, as `unused` is not able to notice that this function is used
   even if it is used in any supervisor, as it will be dynamic call).
 
-  In additiona to wildcard matches, which isn't often what we really want, we
+  In additional to wildcard matches, which isn't often what we really want, we
   can use regular expressions for module and function name or range for arity:
 
       [
