@@ -13,15 +13,17 @@ defmodule MixUnused.Analyzers.Private do
     for {{_, f, _} = mfa, meta} = desc <- all_functions,
         # Ignore `__.*__` as these are often meant to be called only internally
         not (to_string(f) =~ ~r/__.*__/),
-        not called_externally?(mfa, data),
-        not Map.get(meta, :internal, false),
+        not_called_externally?(mfa, data),
+        # Ignore functions with documentation meta `:internal` key set to true
+        not Map.get(meta.doc_meta, :internal, false),
         into: %{},
         do: desc
   end
 
-  defp called_externally?({m, _, _} = mfa, data) do
-    data
-    |> Map.delete(m)
-    |> Enum.any?(fn {_, calls} -> mfa in calls end)
+  # Check if function is called only current module.
+  defp not_called_externally?({m, _, _} = mfa, data) do
+    {current, rest} = Map.pop(data, m, [])
+
+    mfa in current and not Enum.any?(rest, fn {_, calls} -> mfa in calls end)
   end
 end

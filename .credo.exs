@@ -24,12 +24,7 @@
         included: [
           "lib/",
           "src/",
-          "test/",
-          "web/",
-          "apps/*/lib/",
-          "apps/*/src/",
-          "apps/*/test/",
-          "apps/*/web/"
+          "test/"
         ],
         excluded: [~r"/_build/", ~r"/test/fixtures/"]
       },
@@ -96,7 +91,6 @@
         {Credo.Check.Readability.AliasOrder, []},
         {Credo.Check.Readability.FunctionNames, []},
         {Credo.Check.Readability.LargeNumbers, []},
-        {Credo.Check.Readability.MaxLineLength, [priority: :low, max_length: 120]},
         {Credo.Check.Readability.ModuleAttributeNames, []},
         {Credo.Check.Readability.ModuleDoc, []},
         {Credo.Check.Readability.ModuleNames, []},

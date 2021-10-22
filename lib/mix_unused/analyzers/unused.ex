@@ -11,6 +11,7 @@ defmodule MixUnused.Analyzers.Unused do
     calls = Enum.flat_map(data, fn {_key, value} -> value end)
 
     all_functions
+    |> Enum.reject(fn {_mfa, meta} -> Map.get(meta.doc_meta, :export, false) end)
     |> Map.new()
     |> Map.drop(calls)
   end

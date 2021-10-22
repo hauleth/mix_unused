@@ -21,23 +21,18 @@ defmodule MixUnused.Analyze do
     for {mfa, meta} = desc <- analyzer.analyze(data, all_functions) do
       %Diagnostic{
         compiler_name: "unused",
-        message: message(desc, message),
+        message: "#{signature(desc)} #{message}",
         severity: config.severity,
-        position: meta[:line],
-        file: meta[:file] || "nofile",
+        position: meta.line,
+        file: meta.file,
         details: %{
           mfa: mfa,
-          signature: meta[:signature]
+          signature: meta.signature
         }
       }
     end
   end
 
-  defp message({{_, :__struct__, 0}, meta}, message) do
-    "#{meta.signature} #{message}"
-  end
-
-  defp message({{m, f, a}, _meta}, message) do
-    "#{inspect(m)}.#{f}/#{a} #{message}"
-  end
+  defp signature({{_, :__struct__, 0}, meta}), do: meta.signature
+  defp signature({{m, f, a}, _meta}), do: "#{inspect(m)}.#{f}/#{a}"
 end
