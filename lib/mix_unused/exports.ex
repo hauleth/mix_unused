@@ -1,13 +1,20 @@
 defmodule MixUnused.Exports do
   @moduledoc false
 
-  @type t() :: %{mfa() => metadata()} | [{mfa(), metadata()}]
-  @type metadata() :: %{
-          signature: String.t(),
-          file: String.t(),
-          line: non_neg_integer(),
-          doc_meta: map()
-        }
+  defmodule Meta do
+    @moduledoc false
+
+    @type t() :: %__MODULE__{
+            signature: String.t(),
+            file: String.t(),
+            line: non_neg_integer(),
+            doc_meta: map()
+          }
+
+    defstruct signature: nil, file: "nofile", line: 1, doc_meta: %{}
+  end
+
+  @type t() :: %{mfa() => Meta.t()} | [{mfa(), Meta.t()}]
 
   @types ~w[function macro]a
 
@@ -17,6 +24,7 @@ defmodule MixUnused.Exports do
     {:__struct__, 1}
   ]
 
+  @spec application(atom()) :: t()
   def application(name) do
     _ = Application.load(name)
 
@@ -26,7 +34,7 @@ defmodule MixUnused.Exports do
     |> Map.new()
   end
 
-  @spec fetch(module()) :: [{mfa(), metadata()}]
+  @spec fetch(module()) :: t()
   def fetch(module) do
     # Check exported functions without loading modules as this could cause
     # unexpected behaviours in case of `on_load` callbacks
@@ -47,7 +55,7 @@ defmodule MixUnused.Exports do
         line = :erl_anno.line(anno)
 
         {{module, name, arity},
-         %{signature: sig, file: source, line: line, doc_meta: meta}}
+         %Meta{signature: sig, file: source, line: line, doc_meta: meta}}
       end
     else
       _ -> []
