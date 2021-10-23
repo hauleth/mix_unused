@@ -6,7 +6,6 @@
 [![License](https://img.shields.io/hexpm/l/mix_unused.svg)](https://github.com/hauleth/mix_unused/blob/master/LICENSE.md)
 [![Last Updated](https://img.shields.io/github/last-commit/hauleth/mix_unused.svg)](https://github.com/hauleth/mix_unused/commits/master)
 
-
 Mix compiler tracer for detecting unused public functions.
 
 ## Installation

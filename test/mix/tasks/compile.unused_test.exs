@@ -1,15 +1,17 @@
-defmodule MixUnusedTest do
+defmodule Mix.Tasks.Compile.UnusedTest do
   use MixUnused.Case, async: false
 
   import ExUnit.CaptureIO
+
+  alias MixUnused.Analyzers.{Private, Unused}
 
   describe "umbrella" do
     test "simple file" do
       in_fixture("umbrella", fn ->
         assert {{:ok, diagnostics}, _} = run(:umbrella, "compile")
 
-        assert find_diagnostics_for(diagnostics, ModuleA, :foo, 0)
-        assert find_diagnostics_for(diagnostics, ModuleB, :bar, 0)
+        assert find_diagnostics_for(diagnostics, {ModuleA, :foo, 0}, Unused)
+        assert find_diagnostics_for(diagnostics, {ModuleB, :bar, 0}, Unused)
       end)
     end
 
@@ -26,7 +28,7 @@ defmodule MixUnusedTest do
                  run(:umbrella, "compile", ~w[--severity info])
 
         assert %{severity: :information} =
-                 find_diagnostics_for(diagnostics, ModuleA, :foo, 0)
+                 find_diagnostics_for(diagnostics, {ModuleA, :foo, 0}, Unused)
       end)
     end
 
@@ -36,7 +38,7 @@ defmodule MixUnusedTest do
                  run(:umbrella, "compile", ~w[--severity warning])
 
         assert %{severity: :warning} =
-                 find_diagnostics_for(diagnostics, ModuleA, :foo, 0)
+                 find_diagnostics_for(diagnostics, {ModuleA, :foo, 0}, Unused)
       end)
     end
 
@@ -81,7 +83,7 @@ defmodule MixUnusedTest do
       in_fixture("unclean", fn ->
         assert {{:ok, diagnostics}, output} = run(:unclean, "compile")
 
-        refute find_diagnostics_for(diagnostics, Foo, :bar, 0)
+        refute find_diagnostics_for(diagnostics, {Foo, :bar, 0}, Unused)
         refute output =~ "Foo.bar/0 is unused"
       end)
     end
@@ -91,7 +93,7 @@ defmodule MixUnusedTest do
         assert {{:ok, diagnostics}, output} = run(:unclean, "compile")
 
         assert output =~ "Foo.foo/0 is unused"
-        assert find_diagnostics_for(diagnostics, Foo, :foo, 0)
+        assert find_diagnostics_for(diagnostics, {Foo, :foo, 0}, Unused)
       end)
     end
 
@@ -100,7 +102,16 @@ defmodule MixUnusedTest do
         assert {{:ok, diagnostics}, output} = run(:unclean, "compile")
 
         assert output =~ "%Bar{} is unused"
-        assert find_diagnostics_for(diagnostics, Bar, :__struct__, 0)
+        assert find_diagnostics_for(diagnostics, {Bar, :__struct__, 0}, Unused)
+      end)
+    end
+
+    test "function that should be private is reported" do
+      in_fixture("unclean", fn ->
+        assert {{:ok, diagnostics}, output} = run(:unclean, "compile")
+
+        assert output =~ "Foo.baz/0 should be private"
+        assert find_diagnostics_for(diagnostics, {Foo, :baz, 0}, Private)
       end)
     end
 
@@ -117,7 +128,7 @@ defmodule MixUnusedTest do
                  run(:unclean, "compile", ~w[--severity info])
 
         assert %{severity: :information} =
-                 find_diagnostics_for(diagnostics, Foo, :foo, 0)
+                 find_diagnostics_for(diagnostics, {Foo, :foo, 0}, Unused)
       end)
     end
 
@@ -127,7 +138,7 @@ defmodule MixUnusedTest do
                  run(:unclean, "compile", ~w[--severity warning])
 
         assert %{severity: :warning} =
-                 find_diagnostics_for(diagnostics, Foo, :foo, 0)
+                 find_diagnostics_for(diagnostics, {Foo, :foo, 0}, Unused)
       end)
     end
 
@@ -146,8 +157,8 @@ defmodule MixUnusedTest do
     test "when recompiling it inform about unused module" do
       in_fixture("two_mods", fn ->
         assert {{:ok, diagnostics}, output} = run(:two_mods, "compile")
-        assert find_diagnostics_for(diagnostics, Foo, :foo, 0)
-        refute find_diagnostics_for(diagnostics, Foo, :bar, 0), output
+        assert find_diagnostics_for(diagnostics, {Foo, :foo, 0}, Unused)
+        refute find_diagnostics_for(diagnostics, {Foo, :bar, 0}, Unused), output
 
         Mix.Task.clear()
 
@@ -158,8 +169,8 @@ defmodule MixUnusedTest do
         File.write!("lib/foo.ex", content)
 
         assert {{:ok, diagnostics}, _} = run(:two_mods, "compile")
-        assert find_diagnostics_for(diagnostics, Foo, :foo, 0)
-        refute find_diagnostics_for(diagnostics, Foo, :bar, 0)
+        assert find_diagnostics_for(diagnostics, {Foo, :foo, 0}, Unused)
+        refute find_diagnostics_for(diagnostics, {Foo, :bar, 0}, Unused)
       end)
     end
   end
@@ -180,7 +191,10 @@ defmodule MixUnusedTest do
     {result, output}
   end
 
-  defp find_diagnostics_for(diagnostics, m, f, a) do
-    Enum.find(diagnostics, &(&1.details.mfa == {m, f, a}))
+  defp find_diagnostics_for(diagnostics, mfa, analyzer) do
+    Enum.find(
+      diagnostics,
+      &(&1.details.mfa == mfa and &1.details.analyzer == analyzer)
+    )
   end
 end
