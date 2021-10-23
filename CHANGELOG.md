@@ -18,6 +18,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Documentation
 - misc doc changes ([`05c96f5`](https://github.com/hauleth/mix_unused/commit/05c96f5036d38eaf6d89ed7cbb65f5e75744f4c9))
 
+### Features
+- cleanup analyzers ([`5b79d32`](https://github.com/hauleth/mix_unused/commit/5b79d32e2bd40c03b04d5a1d88d1c9ea875376ca))
+- add analyzer for functions that could be private ([`c0bf50d`](https://github.com/hauleth/mix_unused/commit/c0bf50d46433a5cbe59b1a433043c10859e793be))
+
 
 <a name="v0.3.0"></a>
 ## [v0.3.0] - 2021-10-18
