@@ -7,7 +7,7 @@ defmodule MixUnused.Analyze do
 
   @type data :: %{module() => [mfa()]}
 
-  @callback message() :: iodata()
+  @callback message() :: String.t()
   @callback analyze(data(), Exports.t()) :: Exports.t()
 
   @spec analyze(module() | [module()], data(), Exports.t(), map()) ::
@@ -27,7 +27,8 @@ defmodule MixUnused.Analyze do
         file: meta.file,
         details: %{
           mfa: mfa,
-          signature: meta.signature
+          signature: meta.signature,
+          analyzer: analyzer
         }
       }
     end
