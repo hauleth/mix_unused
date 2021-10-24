@@ -32,4 +32,9 @@ jobs:
     - name: Install dependencies
       run: mix do deps.get, deps.compile
     - name: Run tests
-      run: mix test
+      run: mix test --cover
+    - name: Upload coverage results
+      run: |
+        curl -Os https://uploader.codecov.io/latest/linux/codecov
+        chmod +x codecov
+        ./codecov

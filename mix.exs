@@ -20,7 +20,8 @@ defmodule MixUnused.MixProject do
       deps: [
         {:credo, ">= 0.0.0", only: :dev, runtime: false},
         {:ex_doc, ">= 0.0.0", only: :dev, runtime: false},
-        {:dialyxir, "~> 1.0", only: :dev, runtime: false}
+        {:dialyxir, "~> 1.0", only: :dev, runtime: false},
+        {:covertool, "~> 2.0", only: :test}
       ],
       docs: [
         extras: [
@@ -33,7 +34,8 @@ defmodule MixUnused.MixProject do
         source_url: @source_url,
         source_url: "v#{@version}",
         formatters: ["html"]
-      ]
+      ],
+      test_coverage: [tool: :covertool]
     ]
   end
 
