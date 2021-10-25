@@ -14,7 +14,6 @@ jobs:
       matrix:
         otp_version: ['24.0', '23.3', '22.3']
         elixir_version: ['1.10.3', '1.11.4', '1.12.1']
-        rebar3_version: ['3.15.2']
     steps:
     - uses: actions/checkout@v2
     - name: Set up Elixir
@@ -22,19 +21,17 @@ jobs:
       with:
         otp-version: ${{ matrix.otp_version }}
         elixir-version: ${{ matrix.elixir_version }}
-        rebar3-version: ${{ matrix.rebar3_version }}
     - name: Restore dependencies cache
       uses: actions/cache@v2
       with:
         path: deps
-        key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
-        restore-keys: ${{ runner.os }}-mix-
+        key: ${{ runner.os }}-otp-${{ matrix.otp_version }}-mix-${{ hashFiles('**/mix.lock') }}
+        restore-keys: ${{ runner.os }}-otp-${{ matrix.otp_version }}-mix-
     - name: Install dependencies
       run: mix do deps.get, deps.compile
     - name: Run tests
       run: mix test --cover
-    - name: Upload coverage results
-      run: |
-        curl -Os https://uploader.codecov.io/latest/linux/codecov
-        chmod +x codecov
-        ./codecov
+    - uses: codecov/codecov-action@v2
+      with:
+        files: ./coverage.xml
+        flags: elixir-${{ matrix.elixir_version }},otp-${{ matrix.otp_version }}
