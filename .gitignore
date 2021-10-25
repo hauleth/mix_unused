@@ -24,3 +24,4 @@ mix_unused-*.tar
 
 # Temporary files, for example, from tests.
 /tmp/
+/coverage.xml
