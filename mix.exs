@@ -14,6 +14,7 @@ defmodule MixUnused.MixProject do
         licenses: ~w[MIT],
         links: %{
           "Changelog" => "https://hexdocs.pm/mix_unused/changelog.html",
+          "Sponsor" => "https://github.com/sponsors/hauleth",
           "GitHub" => @source_url
         }
       ],
