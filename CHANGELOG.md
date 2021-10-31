@@ -19,6 +19,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - misc doc changes ([`05c96f5`](https://github.com/hauleth/mix_unused/commit/05c96f5036d38eaf6d89ed7cbb65f5e75744f4c9))
 
 ### Features
+- add analyzer to detect functions called only recursively ([`5696fb3`](https://github.com/hauleth/mix_unused/commit/5696fb3eb4ac8cbde28063f9d669a630c3ff57c6))
+- add analyzer to detect functions called only recursively ([`84a351f`](https://github.com/hauleth/mix_unused/commit/84a351fcabced29195350d315b42fadfcda281aa))
 - add covertool support ([`cf476e8`](https://github.com/hauleth/mix_unused/commit/cf476e89754f7262f8461b78a945814aa5882a70))
 - cleanup analyzers ([`5b79d32`](https://github.com/hauleth/mix_unused/commit/5b79d32e2bd40c03b04d5a1d88d1c9ea875376ca))
 - add analyzer for functions that could be private ([`c0bf50d`](https://github.com/hauleth/mix_unused/commit/c0bf50d46433a5cbe59b1a433043c10859e793be))
