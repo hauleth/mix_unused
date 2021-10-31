@@ -13,7 +13,7 @@ defmodule MixUnused.Analyzers.UnusedTest do
 
   test "called externally" do
     function = {Foo, :a, 1}
-    calls = %{Bar => [function]}
+    calls = %{Bar => [{function, %{}}]}
 
     assert %{} == @subject.analyze(calls, [{function, %Meta{}}])
   end
@@ -22,8 +22,8 @@ defmodule MixUnused.Analyzers.UnusedTest do
     function = {Foo, :a, 1}
 
     calls = %{
-      Foo => [function],
-      Bar => [function]
+      Foo => [{function, %{}}],
+      Bar => [{function, %{}}]
     }
 
     assert %{} == @subject.analyze(calls, [{function, %Meta{}}])
@@ -31,7 +31,7 @@ defmodule MixUnused.Analyzers.UnusedTest do
 
   test "called only internally" do
     function = {Foo, :a, 1}
-    calls = %{Foo => [function]}
+    calls = %{Foo => [{function, %{}}]}
 
     assert %{} == @subject.analyze(calls, [{function, %Meta{}}])
   end

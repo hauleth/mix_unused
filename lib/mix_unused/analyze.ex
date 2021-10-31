@@ -4,13 +4,12 @@ defmodule MixUnused.Analyze do
   alias Mix.Task.Compiler.Diagnostic
 
   alias MixUnused.Exports
-
-  @type data :: %{module() => [mfa()]}
+  alias MixUnused.Tracer
 
   @callback message() :: String.t()
-  @callback analyze(data(), Exports.t()) :: Exports.t()
+  @callback analyze(Tracer.data(), Exports.t()) :: Exports.t()
 
-  @spec analyze(module() | [module()], data(), Exports.t(), map()) ::
+  @spec analyze(module() | [module()], Tracer.data(), Exports.t(), map()) ::
           Diagnostic.t()
   def analyze(analyzers, data, all_functions, config) when is_list(analyzers),
     do: Enum.flat_map(analyzers, &analyze(&1, data, all_functions, config))

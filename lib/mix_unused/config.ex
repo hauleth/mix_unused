@@ -3,7 +3,8 @@ defmodule MixUnused.Config do
 
   defstruct checks: [
               MixUnused.Analyzers.Private,
-              MixUnused.Analyzers.Unused
+              MixUnused.Analyzers.Unused,
+              MixUnused.Analyzers.RecursiveOnly
             ],
             ignore: [],
             severity: :hint,

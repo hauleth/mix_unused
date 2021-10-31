@@ -3,7 +3,7 @@ defmodule Mix.Tasks.Compile.UnusedTest do
 
   import ExUnit.CaptureIO
 
-  alias MixUnused.Analyzers.{Private, Unused}
+  alias MixUnused.Analyzers.{Private, Unused, RecursiveOnly}
 
   describe "umbrella" do
     test "simple file" do
@@ -112,6 +112,24 @@ defmodule Mix.Tasks.Compile.UnusedTest do
 
         assert output =~ "Foo.baz/0 should be private"
         assert find_diagnostics_for(diagnostics, {Foo, :baz, 0}, Private)
+      end)
+    end
+
+    test "function that calls itself recursively is not reported" do
+      in_fixture("unclean", fn ->
+        assert {{:ok, diagnostics}, output} = run(:unclean, "compile")
+
+        refute output =~ "Foo.prod/1 is called only recursively"
+        refute find_diagnostics_for(diagnostics, {Foo, :prod, 1}, RecursiveOnly)
+      end)
+    end
+
+    test "function that is called only recursively is reported" do
+      in_fixture("unclean", fn ->
+        assert {{:ok, diagnostics}, output} = run(:unclean, "compile")
+
+        assert output =~ "Foo.fact/1 is called only recursively"
+        assert find_diagnostics_for(diagnostics, {Foo, :fact, 1}, RecursiveOnly)
       end)
     end
 

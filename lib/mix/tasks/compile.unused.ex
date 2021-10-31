@@ -143,7 +143,7 @@ defmodule Mix.Tasks.Compile.Unused do
 
     config.checks
     |> MixUnused.Analyze.analyze(data, all_functions, config)
-    |> Enum.sort()
+    |> Enum.sort_by(&{&1.file, &1.position, &1.details.mfa})
     |> tap_all(&print_diagnostic/1)
     |> case do
       [] ->

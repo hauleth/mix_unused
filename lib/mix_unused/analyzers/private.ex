@@ -24,6 +24,10 @@ defmodule MixUnused.Analyzers.Private do
   defp not_called_externally?({m, _, _} = mfa, data) do
     {current, rest} = Map.pop(data, m, [])
 
-    mfa in current and not Enum.any?(rest, fn {_, calls} -> mfa in calls end)
+    called?(current, mfa) and not Enum.any?(rest, fn {_, calls} ->
+      called?(calls, mfa)
+    end)
   end
+
+  defp called?(calls, mfa), do: List.keymember?(calls, mfa, 0)
 end

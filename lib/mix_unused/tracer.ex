@@ -3,6 +3,11 @@ defmodule MixUnused.Tracer do
 
   use GenServer
 
+  @type env :: %{
+          function: {atom(), arity()}
+        }
+  @type data :: %{module() => [{mfa(), env()}]}
+
   @tab __MODULE__.Functions
 
   @doc false
@@ -66,27 +71,31 @@ defmodule MixUnused.Tracer do
 
   @spec add_call(module(), atom(), arity(), Macro.Env.t()) :: :ok
   defp add_call(m, f, a, env) do
-    _ = :ets.insert_new(@tab, {{env.module, {m, f, a}}, []})
+    _ =
+      :ets.insert(
+        @tab,
+        {{env.module, {m, f, a}},
+         %{
+           function: env.function
+         }}
+      )
 
     :ok
   end
 
-  @spec get_data() :: %{module() => [mfa()]}
+  @spec get_data() :: data()
   def get_data do
     @tab
-    |> :ets.select([{{:"$1", :_}, [], [:"$1"]}])
+    |> :ets.select([
+      {{{:"$1", :"$2"}, :"$3"}, [], [{{:"$1", {{:"$2", :"$3"}}}}]}
+    ])
     |> Enum.group_by(&elem(&1, 0), &elem(&1, 1))
-  end
-
-  @spec get_calls() :: [mfa()]
-  def get_calls do
-    :ets.select(@tab, [{{{:_, :"$1"}, :_}, [], [:"$1"]}])
   end
 
   @impl true
   def init(_args) do
     _ =
-      :ets.new(@tab, [:public, :named_table, :set, {:write_concurrency, true}])
+      :ets.new(@tab, [:public, :named_table, :bag, {:write_concurrency, true}])
 
     {:ok, []}
   end
