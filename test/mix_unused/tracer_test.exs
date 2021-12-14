@@ -1,5 +1,5 @@
 defmodule MixUnused.TracerTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: false
 
   @subject MixUnused.Tracer
 
