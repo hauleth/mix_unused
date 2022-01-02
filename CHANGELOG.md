@@ -15,13 +15,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <a name="unreleased"></a>
 ## [Unreleased]
 
+### Bug Fixes
+- do not fail if cannot write manifest ([`5f407c1`](https://github.com/hauleth/mix_unused/commit/5f407c1bf9792400e3f50143ec652e6bdefa7074))
+
 ### Documentation
 - misc doc changes ([`05c96f5`](https://github.com/hauleth/mix_unused/commit/05c96f5036d38eaf6d89ed7cbb65f5e75744f4c9))
 
 ### Features
-- add sponsoring link to the Hex package links ([`5a26a0b`](https://github.com/hauleth/mix_unused/commit/5a26a0b5a270d74029ef807af9b79bec7137f68c))
-- add analyzer to detect functions called only recursively ([`5696fb3`](https://github.com/hauleth/mix_unused/commit/5696fb3eb4ac8cbde28063f9d669a630c3ff57c6))
-- add analyzer to detect functions called only recursively ([`84a351f`](https://github.com/hauleth/mix_unused/commit/84a351fcabced29195350d315b42fadfcda281aa))
+- add sponsoring link to the Hex package links ([`291c914`](https://github.com/hauleth/mix_unused/commit/291c9140a624b9f2c96e7663d6f02c7f5a2d05de))
+- add analyzer to detect functions called only recursively ([`48411d1`](https://github.com/hauleth/mix_unused/commit/48411d10ed5752a719e6bb89e0b734a3d67a00c0))
 - add covertool support ([`cf476e8`](https://github.com/hauleth/mix_unused/commit/cf476e89754f7262f8461b78a945814aa5882a70))
 - cleanup analyzers ([`5b79d32`](https://github.com/hauleth/mix_unused/commit/5b79d32e2bd40c03b04d5a1d88d1c9ea875376ca))
 - add analyzer for functions that could be private ([`c0bf50d`](https://github.com/hauleth/mix_unused/commit/c0bf50d46433a5cbe59b1a433043c10859e793be))
