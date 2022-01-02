@@ -130,7 +130,16 @@ defmodule Mix.Tasks.Compile.Unused do
       end
 
     data = Map.merge(cache, Tracer.get_data())
-    _ = File.write!(manifest, :erlang.term_to_binary(data))
+
+    _ = File.mkdir_p(Mix.Project.manifest_path())
+
+    case File.write(manifest, :erlang.term_to_binary(data)) do
+      :ok ->
+        nil
+
+      {:error, error} ->
+        Mix.shell().error("Cannot write manifest: #{inspect(error)}")
+    end
 
     all_functions =
       app
