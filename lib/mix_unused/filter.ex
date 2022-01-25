@@ -45,8 +45,8 @@ defmodule MixUnused.Filter do
     match?(pmod, fmod) and match?(pname, fname) and arity_match?(parity, farity)
   end
 
-  # TODO: Allow `cb/2` to match against function metadata
   defp mfa_match?(cb, mfa, _meta) when is_function(cb, 1), do: cb.(mfa)
+  defp mfa_match?(cb, mfa, meta) when is_function(cb, 2), do: cb.(mfa, meta)
 
   defp match?(value, value), do: true
   defp match?(:_, _value), do: true
