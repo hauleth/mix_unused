@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - misc doc changes ([`05c96f5`](https://github.com/hauleth/mix_unused/commit/05c96f5036d38eaf6d89ed7cbb65f5e75744f4c9))
 
 ### Features
+- scan for transitive unused functions ([`80825bd`](https://github.com/hauleth/mix_unused/commit/80825bd1f3c134f0aa04cc2dac56e8ca345a0d1c))
 - add sponsoring link to the Hex package links ([`291c914`](https://github.com/hauleth/mix_unused/commit/291c9140a624b9f2c96e7663d6f02c7f5a2d05de))
 - add analyzer to detect functions called only recursively ([`48411d1`](https://github.com/hauleth/mix_unused/commit/48411d10ed5752a719e6bb89e0b734a3d67a00c0))
 - add covertool support ([`cf476e8`](https://github.com/hauleth/mix_unused/commit/cf476e89754f7262f8461b78a945814aa5882a70))
