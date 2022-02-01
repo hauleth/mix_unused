@@ -123,23 +123,9 @@ defmodule Mix.Tasks.Compile.Unused do
     # Cleanup tracers after compilation
     Code.put_compiler_option(:tracers, tracers)
 
-    cache =
-      case File.read(manifest) do
-        {:ok, data} -> :erlang.binary_to_term(data)
-        _ -> %{}
-      end
-
-    data = Map.merge(cache, Tracer.get_data())
-
-    _ = File.mkdir_p(Mix.Project.manifest_path())
-
-    case File.write(manifest, :erlang.term_to_binary(data)) do
-      :ok ->
-        nil
-
-      {:error, error} ->
-        Mix.shell().error("Cannot write manifest: #{inspect(error)}")
-    end
+    data =
+      Tracer.get_data()
+      |> update_manifest(manifest)
 
     all_functions =
       app
@@ -165,6 +151,31 @@ defmodule Mix.Tasks.Compile.Unused do
         {status, messages ++ diagnostics}
     end
   end
+
+  def update_manifest(data, manifest) do
+    cache =
+      case File.read(manifest) do
+        {:ok, data} -> :erlang.binary_to_term(data)
+        _ -> %{}
+      end
+
+    {version, cache} = normalise_cache(cache)
+
+    data = Map.merge(cache, data)
+
+    _ = File.mkdir_p(Mix.Project.manifest_path())
+
+    with {:error, error} <-
+           File.write(manifest, :erlang.term_to_binary({version, data})) do
+      Mix.shell().error("Cannot write manifest: #{inspect(error)}")
+    end
+
+    data
+  end
+
+  defp normalise_cache({:v0, map}) when is_map(map), do: {:v0, map}
+  defp normalise_cache(map) when is_map(map), do: {:v0, map}
+  defp normalise_cache(_), do: %{}
 
   defp print_diagnostic(%Diagnostic{details: %{mfa: {_, :__struct__, 1}}}),
     do: nil

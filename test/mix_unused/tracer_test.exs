@@ -141,7 +141,8 @@ defmodule MixUnused.TracerTest do
                @attr.foo()
              end
            end)
-    test "contains information about remote calls using module attributes", ctx do
+    test "contains information about remote calls using module attributes",
+         ctx do
       assert find_call(ctx.calls, {Remote, :foo, 0})
     end
 
@@ -152,7 +153,8 @@ defmodule MixUnused.TracerTest do
                @attr.foo()
              end
            end)
-    test "contains information about remote calls using dynamic module attributes (default)", ctx do
+    test "contains information about remote calls using dynamic module attributes (default)",
+         ctx do
       assert find_call(ctx.calls, {Remote, :foo, 0})
     end
 
@@ -163,7 +165,8 @@ defmodule MixUnused.TracerTest do
                @attr.foo()
              end
            end)
-    test "contains information about remote calls using dynamic module attributes", ctx do
+    test "contains information about remote calls using dynamic module attributes",
+         ctx do
       assert find_call(ctx.calls, {Remote, :foo, 0})
     end
 
@@ -190,8 +193,8 @@ defmodule MixUnused.TracerTest do
            end)
     test "stores calling function", ctx do
       name = ctx.module_name
-      assert find_call(ctx.calls, {^name, :foo, 0}, %{function: {:a, 0}})
-      assert find_call(ctx.calls, {^name, :foo, 0}, %{function: {:b, 0}})
+      assert find_call(ctx.calls, {^name, :foo, 0}, %{caller: {:a, 0}})
+      assert find_call(ctx.calls, {^name, :foo, 0}, %{caller: {:b, 0}})
     end
   end
 end
