@@ -13,7 +13,7 @@ defmodule MixUnused.Analyzers.UnusedTest do
 
   test "called externally" do
     function = {Foo, :a, 1}
-    calls = %{Bar => [{function, %{}}]}
+    calls = %{Bar => [{function, %{caller: {:b, 1}}}]}
 
     assert %{} == @subject.analyze(calls, [{function, %Meta{}}])
   end
@@ -22,8 +22,8 @@ defmodule MixUnused.Analyzers.UnusedTest do
     function = {Foo, :a, 1}
 
     calls = %{
-      Foo => [{function, %{}}],
-      Bar => [{function, %{}}]
+      Foo => [{function, %{caller: {:b, 1}}}],
+      Bar => [{function, %{caller: {:b, 1}}}]
     }
 
     assert %{} == @subject.analyze(calls, [{function, %Meta{}}])
@@ -31,7 +31,7 @@ defmodule MixUnused.Analyzers.UnusedTest do
 
   test "called only internally" do
     function = {Foo, :a, 1}
-    calls = %{Foo => [{function, %{}}]}
+    calls = %{Foo => [{function, %{caller: {:b, 1}}}]}
 
     assert %{} == @subject.analyze(calls, [{function, %Meta{}}])
   end
@@ -48,6 +48,24 @@ defmodule MixUnused.Analyzers.UnusedTest do
     assert %{} ==
              @subject.analyze(%{}, [
                {function, %Meta{doc_meta: %{export: true}}}
+             ])
+  end
+
+  test "transitive functions are reported" do
+    function_a = {Foo, :a, 1}
+    function_b = {Foo, :b, 1}
+
+    calls = %{
+      Foo => [{function_b, %{function: {:a, 1}}}]
+    }
+
+    assert %{
+             ^function_a => _,
+             ^function_b => _
+           } =
+             @subject.analyze(calls, [
+               {function_a, %Meta{}},
+               {function_b, %Meta{}}
              ])
   end
 end

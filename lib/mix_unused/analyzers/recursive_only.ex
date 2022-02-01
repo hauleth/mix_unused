@@ -10,13 +10,13 @@ defmodule MixUnused.Analyzers.RecursiveOnly do
   def analyze(data, all_functions) do
     non_rec_calls =
       for {mod, calls} <- data,
-          {{m, f, a} = mfa, %{function: {call_f, call_a}}} <- calls,
+          {{m, f, a} = mfa, %{caller: {call_f, call_a}}} <- calls,
           m != mod or f != call_f or a != call_a,
           do: mfa
 
     recursive_calls =
       for {module, calls} <- data,
-          {{^module, f, a} = mfa, %{function: {f, a}}} <- calls,
+          {{^module, f, a} = mfa, %{caller: {f, a}}} <- calls,
           mfa not in non_rec_calls,
           do: mfa
 

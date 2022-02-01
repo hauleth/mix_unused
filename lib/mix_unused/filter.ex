@@ -96,7 +96,7 @@ defmodule MixUnused.Filter do
   """
   @spec reject_matching(exports :: Exports.t(), patterns :: [pattern()]) ::
           Exports.t()
-  def reject_matching(exports, patterns) do
+  def reject_matching(exports, patterns, cb \\ &extract/1) do
     filters =
       Enum.map(patterns, fn
         {_m, _f, _a} = entry -> entry
@@ -105,7 +105,8 @@ defmodule MixUnused.Filter do
         m -> {m, :_, :_}
       end)
 
-    Enum.reject(exports, fn {func, _} ->
+    Enum.reject(exports, fn data ->
+      func = cb.(data)
       Enum.any?(filters, &mfa_match?(&1, func))
     end)
   end
@@ -127,4 +128,6 @@ defmodule MixUnused.Filter do
   defp arity_match?(value, value), do: true
   defp arity_match?(_.._ = range, value), do: value in range
   defp arity_match?(_, _), do: false
+
+  defp extract({func, _}), do: func
 end

@@ -76,7 +76,7 @@ defmodule MixUnused.Tracer do
         @tab,
         {{env.module, {m, f, a}},
          %{
-           function: env.function
+           caller: env.function
          }}
       )
 
