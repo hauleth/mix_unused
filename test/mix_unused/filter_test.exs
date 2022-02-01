@@ -39,14 +39,14 @@ defmodule MixUnused.FilterTest do
 
   test "exact pattern" do
     functions = %{
-      {Foo, :bar, 1} => %{},
-      {Bar, :baz, 2} => %{}
+      {Foo, :bar, 1} => %Meta{},
+      {Bar, :baz, 2} => %Meta{}
     }
 
     patterns = [{Foo, :bar, 1}]
 
     assert @subject.reject_matching(functions, patterns) == %{
-             {Bar, :baz, 2} => %{}
+             {Bar, :baz, 2} => %Meta{}
            }
   end
 
@@ -60,7 +60,7 @@ defmodule MixUnused.FilterTest do
   property "simple patterns" do
     check all mfa <- mfa(),
               pattern <- mfa_pattern(mfa) do
-      functions = %{mfa => %{}}
+      functions = %{mfa => %Meta{}}
 
       assert %{} == @subject.reject_matching(functions, [pattern])
     end
@@ -76,7 +76,7 @@ defmodule MixUnused.FilterTest do
                   tuple({m}),
                   constant(m)
                 ]) do
-      functions = %{mfa => %{}}
+      functions = %{mfa => %Meta{}}
 
       assert %{} == @subject.reject_matching(functions, [pattern])
     end
@@ -85,8 +85,8 @@ defmodule MixUnused.FilterTest do
   describe "regular expression" do
     test "can be used for function name" do
       functions = %{
-        {Foo, :bar, 1} => %{},
-        {Foo, :baz, 1} => %{}
+        {Foo, :bar, 1} => %Meta{},
+        {Foo, :baz, 1} => %Meta{}
       }
 
       patterns = [{Foo, ~r/^ba[rz]$/}]
@@ -95,8 +95,8 @@ defmodule MixUnused.FilterTest do
 
     test "can be used for module name" do
       functions = %{
-        {Foo, :bar, 1} => %{},
-        {Foo, :baz, 1} => %{}
+        {Foo, :bar, 1} => %Meta{},
+        {Foo, :baz, 1} => %Meta{}
       }
 
       patterns = [{Foo, ~r/^ba[rz]$/}]
@@ -105,16 +105,16 @@ defmodule MixUnused.FilterTest do
 
     test "raw regex matches module name" do
       functions = %{
-        {Foo, :bar, 1} => %{},
-        {Boo, :bar, 1} => %{}
+        {Foo, :bar, 1} => %Meta{},
+        {Boo, :bar, 1} => %Meta{}
       }
 
       patterns = [~r/.oo/]
       assert @subject.reject_matching(functions, patterns) == %{}
 
       functions = %{
-        {Foo, :far, 1} => %{},
-        {Boo, :bar, 1} => %{}
+        {Foo, :far, 1} => %Meta{},
+        {Boo, :bar, 1} => %Meta{}
       }
 
       patterns = [~r/.ar/]
@@ -125,15 +125,15 @@ defmodule MixUnused.FilterTest do
   describe "range" do
     test "arity can be checked against range" do
       functions = %{
-        {Foo, :bar, 1} => %{},
-        {Foo, :bar, 2} => %{},
-        {Foo, :bar, 3} => %{}
+        {Foo, :bar, 1} => %Meta{},
+        {Foo, :bar, 2} => %Meta{},
+        {Foo, :bar, 3} => %Meta{}
       }
 
       patterns = [{Foo, :bar, 2..3}]
 
       assert @subject.reject_matching(functions, patterns) == %{
-               {Foo, :bar, 1} => %{}
+               {Foo, :bar, 1} => %Meta{}
              }
     end
   end
@@ -141,16 +141,35 @@ defmodule MixUnused.FilterTest do
   describe "predicate function" do
     test "simple predicate" do
       functions = %{
-        {Foo, :bar, 1} => %{},
-        {Foo, :bar, 2} => %{},
-        {Foo, :bar, 3} => %{}
+        {Foo, :bar, 1} => %Meta{},
+        {Foo, :bar, 2} => %Meta{},
+        {Foo, :bar, 3} => %Meta{}
       }
 
       patterns = [&match?({Foo, :bar, 2}, &1)]
 
       assert @subject.reject_matching(functions, patterns) == %{
-               {Foo, :bar, 1} => %{},
-               {Foo, :bar, 3} => %{}
+               {Foo, :bar, 1} => %Meta{},
+               {Foo, :bar, 3} => %Meta{}
+             }
+    end
+
+    test "metadata predicate" do
+      functions = %{
+        {Foo, :bar, 1} => %Meta{},
+        {Foo, :bar, 2} => %Meta{file: "ignore.ex"},
+        {Foo, :bar, 3} => %Meta{file: "keep.ex"}
+      }
+
+      predicate = fn _, meta ->
+        meta.file == "ignore.ex"
+      end
+
+      patterns = [predicate]
+
+      assert @subject.reject_matching(functions, patterns) == %{
+               {Foo, :bar, 1} => %Meta{},
+               {Foo, :bar, 3} => %Meta{file: "keep.ex"}
              }
     end
   end
