@@ -2,6 +2,8 @@ defmodule MixUnused.FilterTest do
   use ExUnit.Case, async: true
   use ExUnitProperties
 
+  alias MixUnused.Meta
+
   @subject MixUnused.Filter
 
   doctest @subject
@@ -50,7 +52,7 @@ defmodule MixUnused.FilterTest do
 
   @tag :slow
   property "empty pattern list works as passthrough" do
-    check all functions <- map_of(mfa(), constant(%{})) do
+    check all functions <- map_of(mfa(), constant(%Meta{})) do
       assert functions == @subject.reject_matching(functions, [])
     end
   end
@@ -99,6 +101,24 @@ defmodule MixUnused.FilterTest do
 
       patterns = [{Foo, ~r/^ba[rz]$/}]
       assert @subject.reject_matching(functions, patterns) == %{}
+    end
+
+    test "raw regex matches module name" do
+      functions = %{
+        {Foo, :bar, 1} => %{},
+        {Boo, :bar, 1} => %{}
+      }
+
+      patterns = [~r/.oo/]
+      assert @subject.reject_matching(functions, patterns) == %{}
+
+      functions = %{
+        {Foo, :far, 1} => %{},
+        {Boo, :bar, 1} => %{}
+      }
+
+      patterns = [~r/.ar/]
+      refute @subject.reject_matching(functions, patterns) == %{}
     end
   end
 
