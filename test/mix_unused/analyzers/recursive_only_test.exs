@@ -1,7 +1,7 @@
 defmodule MixUnused.Analyzers.RecursiveOnlyTest do
   use ExUnit.Case, async: true
 
-  alias MixUnused.Exports.Meta
+  alias MixUnused.Meta
 
   @subject MixUnused.Analyzers.RecursiveOnly
 

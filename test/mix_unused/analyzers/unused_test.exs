@@ -1,7 +1,7 @@
 defmodule MixUnused.Analyzers.UnusedTest do
   use ExUnit.Case, async: true
 
-  alias MixUnused.Exports.Meta
+  alias MixUnused.Meta
 
   @subject MixUnused.Analyzers.Unused
 

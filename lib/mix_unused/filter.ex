@@ -4,6 +4,7 @@ defmodule MixUnused.Filter do
   import Kernel, except: [match?: 2]
 
   alias MixUnused.Exports
+  alias MixUnused.Meta
 
   @type module_pattern() :: module() | Regex.t() | :_
   @type function_pattern() :: atom() | Regex.t() | :_
@@ -40,7 +41,7 @@ defmodule MixUnused.Filter do
     |> Map.new()
   end
 
-  @spec mfa_match?(mfa(), pattern(), Exports.Meta.t()) :: boolean()
+  @spec mfa_match?(mfa(), pattern(), Meta.t()) :: boolean()
   defp mfa_match?({pmod, pname, parity}, {fmod, fname, farity}, _meta) do
     match?(pmod, fmod) and match?(pname, fname) and arity_match?(parity, farity)
   end
