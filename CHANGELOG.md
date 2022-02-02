@@ -15,6 +15,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <a name="unreleased"></a>
 ## [Unreleased]
 
+
+<a name="v0.4.0"></a>
+## [v0.4.0] - 2022-02-02
 ### Bug Fixes
 - do not fail if cannot write manifest ([`5f407c1`](https://github.com/hauleth/mix_unused/commit/5f407c1bf9792400e3f50143ec652e6bdefa7074))
 
@@ -93,7 +96,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - add module.behaviour_info/1 to list of ignored built ins ([`df2f7e2`](https://github.com/hauleth/mix_unused/commit/df2f7e2209f5ee229d9c3c5efe3ee5c9b40f3261))
 
 
-[Unreleased]: https://github.com/hauleth/mix_unused/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/hauleth/mix_unused/compare/v0.4.0...HEAD
+[v0.4.0]: https://github.com/hauleth/mix_unused/compare/v0.3.0...v0.4.0
 [v0.3.0]: https://github.com/hauleth/mix_unused/compare/v0.2.1...v0.3.0
 [v0.2.1]: https://github.com/hauleth/mix_unused/compare/v0.2.0...v0.2.1
 [v0.2.0]: https://github.com/hauleth/mix_unused/compare/v0.1.0...v0.2.0
