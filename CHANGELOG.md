@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - do not fail if cannot write manifest ([`5f407c1`](https://github.com/hauleth/mix_unused/commit/5f407c1bf9792400e3f50143ec652e6bdefa7074))
 
 ### Documentation
+- add documentation about using predicate filters ([`1360fd5`](https://github.com/hauleth/mix_unused/commit/1360fd5f3ff95f83632e4b4d23fb81d12a5b686f))
 - misc doc changes ([`05c96f5`](https://github.com/hauleth/mix_unused/commit/05c96f5036d38eaf6d89ed7cbb65f5e75744f4c9))
 
 ### Features
