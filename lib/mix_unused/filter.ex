@@ -19,9 +19,8 @@ defmodule MixUnused.Filter do
 
   @type pattern() :: predicate() | mfa_pattern()
 
-  @doc """
-  Reject values in `exports` that match any pattern in `patterns`.
-  """
+  # Reject values in `exports` that match any pattern in `patterns`.
+  @doc false
   @spec reject_matching(exports :: Exports.t(), patterns :: [pattern()]) ::
           Exports.t()
   def reject_matching(exports, patterns) do

@@ -29,11 +29,9 @@ defmodule MixUnused.MixProject do
       docs: [
         extras: [
           "CHANGELOG.md": [],
-          LICENSE: [title: "License"],
-          "README.md": [title: "Overview"]
+          LICENSE: [title: "License"]
         ],
-        # main: "Mix.Tasks.Compile.Unused",
-        main: "readme",
+        main: "Mix.Tasks.Compile.Unused",
         source_url: @source_url,
         source_url: "v#{@version}",
         formatters: ["html"]

@@ -69,6 +69,10 @@ defmodule Mix.Tasks.Compile.Unused do
   To ignore warnings about unused structs you need to use "special" syntax in
   form of `{StructModule, :__struct__, 0}`.
 
+  The pattern list can also take the predicate function which can be either
+  unary or binary function. First argument will be `t:mfa/0` and second argument
+  (in case of the binary function) will be `t:MixUnused.Meta.t/0`.
+
   ### Documentation metadata
 
   Functions that have `export: true` in their metadata will be automatically
@@ -77,9 +81,9 @@ defmodule Mix.Tasks.Compile.Unused do
 
   ## Options
 
-  - `severity` - severity of the reported messages, defaults to `hint`.
+  - `--severity` - severity of the reported messages, defaults to `hint`.
     Other allowed levels are `information`, `warning`, and `error`.
-  - `warnings-as-errors` - if the `severity` is set to `:warning` and there is
+  - `--warnings-as-errors` - if the `severity` is set to `:warning` and there is
     any report, then fail compilation with exit code `1`.
   """
 
@@ -152,7 +156,7 @@ defmodule Mix.Tasks.Compile.Unused do
     end
   end
 
-  def update_manifest(data, manifest) do
+  defp update_manifest(data, manifest) do
     cache =
       case File.read(manifest) do
         {:ok, data} -> :erlang.binary_to_term(data)
