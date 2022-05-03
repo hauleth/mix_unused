@@ -46,9 +46,12 @@ defmodule MixUnused.Analyzers.UnusedTest do
     function = {Foo, :a, 1}
 
     assert %{} ==
-             @subject.analyze(%{}, [
-               {function, %Meta{doc_meta: %{export: true}}}
-             ])
+             @subject.analyze(
+               %{},
+               [
+                 {function, %Meta{doc_meta: %{export: true}}}
+               ]
+             )
   end
 
   test "transitive functions are reported" do
@@ -63,9 +66,12 @@ defmodule MixUnused.Analyzers.UnusedTest do
              ^function_a => _,
              ^function_b => _
            } =
-             @subject.analyze(calls, [
-               {function_a, %Meta{}},
-               {function_b, %Meta{}}
-             ])
+             @subject.analyze(
+               calls,
+               [
+                 {function_a, %Meta{}},
+                 {function_b, %Meta{}}
+               ]
+             )
   end
 end

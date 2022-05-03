@@ -17,8 +17,15 @@ defmodule MixUnused.Meta do
           signature: String.t(),
           file: String.t(),
           line: non_neg_integer(),
-          doc_meta: map()
+          doc_meta: map(),
+          callback: boolean(),
+          generated: boolean()
         }
 
-  defstruct signature: nil, file: "nofile", line: 1, doc_meta: %{}
+  defstruct signature: nil,
+            file: "nofile",
+            line: 1,
+            doc_meta: %{},
+            callback: false,
+            generated: false
 end

@@ -37,14 +37,24 @@ defmodule MixUnused.Exports do
       source =
         data[:compile_info] |> Keyword.get(:source, "nofile") |> to_string()
 
+      user_functions = user_functions(docs)
+
       for {{type, name, arity}, anno, [sig | _], _doc, meta} <- docs,
           type in @types,
-          {name, arity} not in @ignored,
-          {name, arity} not in callbacks do
+          {name, arity} not in @ignored do
         line = :erl_anno.line(anno)
+        callback = {name, arity} in callbacks
+        generated = {name, arity} not in user_functions
 
         {{module, name, arity},
-         %Meta{signature: sig, file: source, line: line, doc_meta: meta}}
+         %Meta{
+           signature: sig,
+           file: source,
+           line: line,
+           doc_meta: meta,
+           callback: callback,
+           generated: generated
+         }}
       end
     else
       _ -> []
@@ -76,5 +86,15 @@ defmodule MixUnused.Exports do
       _ ->
         []
     end
+  end
+
+  defp user_functions(docs) do
+    # Guess functions that are not generated at compile-time by checking
+    # if there are multiple functions defined at the same position.
+    docs
+    |> Enum.group_by(fn {_item, anno, _sig, _doc, _meta} -> anno end)
+    |> Enum.filter(&match?({_, [_]}, &1))
+    |> Enum.flat_map(fn {_, items} -> items end)
+    |> Enum.map(fn {{_, f, a}, _anno, _sig, _doc, _meta} -> {f, a} end)
   end
 end

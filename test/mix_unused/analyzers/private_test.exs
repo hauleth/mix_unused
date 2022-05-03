@@ -46,8 +46,11 @@ defmodule MixUnused.Analyzers.PrivateTest do
     function = {Foo, :a, 1}
 
     assert %{} ==
-             @subject.analyze(%{}, [
-               {function, %Meta{doc_meta: %{internal: true}}}
-             ])
+             @subject.analyze(
+               %{},
+               [
+                 {function, %Meta{doc_meta: %{internal: true}}}
+               ]
+             )
   end
 end

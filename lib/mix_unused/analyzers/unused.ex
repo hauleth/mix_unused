@@ -1,14 +1,21 @@
 defmodule MixUnused.Analyzers.Unused do
   @moduledoc false
 
+  alias MixUnused.Meta
+
   @behaviour MixUnused.Analyze
 
   @impl true
   def message, do: "is unused"
 
   @impl true
-  def analyze(data, possibly_uncalled) do
+  def analyze(data, functions, _config \\ nil) do
     graph = Graph.new(type: :directed)
+
+    possibly_uncalled =
+      for {_mfa, %Meta{callback: false}} = call <- functions,
+          into: %{},
+          do: call
 
     graph =
       for {m, calls} <- data,
