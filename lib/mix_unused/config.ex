@@ -2,7 +2,7 @@ defmodule MixUnused.Config do
   @moduledoc false
 
   @type t :: %__MODULE__{
-          checks: [module() | {module(), any()}],
+          checks: [MixUnused.Analyze.analyzer()],
           ignore: [mfa()],
           paths: [String.t()] | nil,
           severity: :hint | :information | :warning | :error,

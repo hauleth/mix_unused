@@ -18,7 +18,7 @@ defmodule MixUnused.Analyze do
           Exports.t(),
           Config.t()
         ) ::
-          Diagnostic.t()
+          [Diagnostic.t()]
   def analyze(analyzers, data, all_functions, config) when is_list(analyzers),
     do: Enum.flat_map(analyzers, &analyze(&1, data, all_functions, config))
 
