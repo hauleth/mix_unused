@@ -3,7 +3,7 @@ defmodule Mix.Tasks.Compile.UnusedTest do
 
   import ExUnit.CaptureIO
 
-  alias MixUnused.Analyzers.{Private, Unused, RecursiveOnly}
+  alias MixUnused.Analyzers.{Private, Unreachable, Unused, RecursiveOnly}
 
   describe "umbrella" do
     test "simple file" do
@@ -74,6 +74,75 @@ defmodule Mix.Tasks.Compile.UnusedTest do
                    "compile",
                    ~w[--severity warning --warnings-as-errors]
                  )
+      end)
+    end
+  end
+
+  describe "using unreachable analyzer" do
+    test "only expected unused functions are reported" do
+      in_fixture("unreachable", fn ->
+        assert {{:ok, diagnostics}, output} = run(:unreachable, "compile")
+
+        refute find_diagnostics_for(
+                 diagnostics,
+                 {SimpleStruct, :__struct__, 0},
+                 Unreachable
+               )
+
+        # SimpleStruct.foo/2 is called with default arguments and is not reported
+        refute find_diagnostics_for(
+                 diagnostics,
+                 {SimpleStruct, :foo, 2},
+                 Unreachable
+               )
+
+        # SimpleModule.use_foo/1 is called transitively from the behaviour and is not reported
+        refute find_diagnostics_for(
+                 diagnostics,
+                 {SimpleModule, :use_foo, 1},
+                 Unreachable
+               )
+
+        # SimpleServer functions are callbacks defined as entrypoints and are not reported
+        refute find_diagnostics_for(
+                 diagnostics,
+                 {SimpleServer, :init, 1},
+                 Unreachable
+               )
+
+        # SimpleModule.g/0 is generated and is not reported
+        refute find_diagnostics_for(
+                 diagnostics,
+                 {SimpleModule, :g, 0},
+                 Unreachable
+               )
+
+        # Constants.answer/0 is evaluated at compile-time and is not reported
+        refute find_diagnostics_for(
+                 diagnostics,
+                 {Constants, :answer, 0},
+                 Unreachable
+               )
+
+        assert find_diagnostics_for(
+                 diagnostics,
+                 {UnusedStruct, :__struct__, 0},
+                 Unreachable
+               )
+
+        assert find_diagnostics_for(
+                 diagnostics,
+                 {UnusedStruct, :unused, 0},
+                 Unreachable
+               )
+
+        assert find_diagnostics_for(
+                 diagnostics,
+                 {SimpleModule, :used_from_unused, 0},
+                 Unreachable
+               )
+
+        assert 3 == length(diagnostics), output
       end)
     end
   end

@@ -3,7 +3,7 @@ defmodule MixUnused.Exports do
 
   alias MixUnused.Meta
 
-  @type t() :: %{mfa() => Meta.t()} | [{mfa(), Meta.t()}]
+  @type t() :: %{mfa() => Meta.t()}
 
   @types ~w[function macro]a
 
@@ -23,8 +23,8 @@ defmodule MixUnused.Exports do
     |> Map.new()
   end
 
-  @spec fetch(module()) :: t()
-  def fetch(module) do
+  @spec fetch(module()) :: [{mfa(), Meta.t()}]
+  defp fetch(module) do
     # Check exported functions without loading modules as this could cause
     # unexpected behaviours in case of `on_load` callbacks
     with path when is_list(path) <- :code.which(module),

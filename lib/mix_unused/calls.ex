@@ -1,4 +1,4 @@
-defmodule MixUnused.Analyzers.Unreachable.Calls do
+defmodule MixUnused.Analyzers.Calls do
   @moduledoc false
 
   alias MixUnused.Exports
@@ -24,13 +24,13 @@ defmodule MixUnused.Analyzers.Unreachable.Calls do
     end
   end
 
-  defp add_calls_from_default_functions(graph, callables) do
+  defp add_calls_from_default_functions(graph, functions) do
     # A function with default arguments is splitted at compile-time in multiple functions
     #  with different arities.
     #  The main function is indirectly called when a function with default arguments is called,
     #  so the graph should contain an edge for each generated function (from the generated
     #  function to the main one).
-    for {{m, f, a} = mfa, %Meta{doc_meta: meta}} <- callables,
+    for {{m, f, a} = mfa, %Meta{doc_meta: meta}} <- functions,
         defaults = Map.get(meta, :defaults, 0),
         defaults > 0,
         arity <- (a - defaults)..(a - 1),

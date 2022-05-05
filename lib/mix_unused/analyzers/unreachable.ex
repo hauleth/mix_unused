@@ -4,7 +4,7 @@ defmodule MixUnused.Analyzers.Unreachable do
   All remaining functions are considered "unused".
   """
 
-  alias MixUnused.Analyzers.Unreachable.Calls
+  alias MixUnused.Analyzers.Calls
   alias MixUnused.Analyzers.Unreachable.Config
   alias MixUnused.Analyzers.Unreachable.Entrypoints
   alias MixUnused.Meta
@@ -18,7 +18,7 @@ defmodule MixUnused.Analyzers.Unreachable do
   def analyze(data, functions, config) do
     config = Config.cast(config)
     graph = Calls.calls_graph(data, functions)
-    entrypoints = Entrypoints.entrypoints(config)
+    entrypoints = Entrypoints.entrypoints(config, functions)
     reachables = graph |> Graph.reachable(entrypoints) |> MapSet.new()
     called_at_compile_time = Calls.called_at_compile_time(data, functions)
 
@@ -33,6 +33,7 @@ defmodule MixUnused.Analyzers.Unreachable do
 
   # Clause to detect an unused struct
   defp candidate?({{_f, :__struct__, _a}, _meta}), do: true
-  # Clause to ignore all other generated functions
-  defp candidate?({_mfa, %Meta{generated: generated}}), do: not generated
+  # Clause to ignore all generated functions except callbacks
+  defp candidate?({_mfa, %Meta{generated: true, callback: false}}), do: false
+  defp candidate?(_), do: true
 end

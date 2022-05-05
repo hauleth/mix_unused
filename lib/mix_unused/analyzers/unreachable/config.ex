@@ -4,7 +4,7 @@ defmodule MixUnused.Analyzers.Unreachable.Config do
   alias __MODULE__, as: Config
 
   @type t :: %Config{
-          entrypoints: [mfa()],
+          entrypoints: [module() | mfa()],
           entrypoints_discovery: [module()]
         }
 
