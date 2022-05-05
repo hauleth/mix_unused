@@ -1,6 +1,6 @@
 defmodule MixUnused.Analyzers.Unreachable.Entrypoints.AmqpxConsumersDiscovery do
   @moduledoc """
-  Discovers the consumers configured for the amqpx library.
+  Discovers the consumers configured for the [amqpx library](https://hex.pm/packages/amqpx).
   """
 
   @behaviour MixUnused.Analyzers.Unreachable.Entrypoints
