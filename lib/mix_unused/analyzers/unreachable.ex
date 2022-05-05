@@ -33,7 +33,7 @@ defmodule MixUnused.Analyzers.Unreachable do
 
   # Clause to detect an unused struct
   defp candidate?({{_f, :__struct__, _a}, _meta}), do: true
-  # Clause to ignore all generated functions except callbacks
-  defp candidate?({_mfa, %Meta{generated: true, callback: false}}), do: false
+  # Clause to ignore all generated functions
+  defp candidate?({_mfa, %Meta{generated: true}}), do: false
   defp candidate?(_), do: true
 end
