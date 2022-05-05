@@ -20,6 +20,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - add `paths` configuration option to report only functions defined in such paths
 - make the `checks` options overridable
 
+### Bug Fixes
+- detect usage of functions called with default arguments
+
 <a name="v0.4.0"></a>
 ## [v0.4.0] - 2022-02-02
 ### Bug Fixes

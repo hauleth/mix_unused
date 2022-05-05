@@ -79,7 +79,7 @@ defmodule MixUnused.Analyzers.UnreachableTest do
              )
   end
 
-  test "functions with default arguments are honored" do
+  test "functions called with default arguments are not reported" do
     function = {Foo, :a, 1}
     functions = %{function => %Meta{doc_meta: %{defaults: 1}}}
     calls = %{Foo => [{{Foo, :a, 0}, %{caller: {:b, 1}}}]}

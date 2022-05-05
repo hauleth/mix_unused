@@ -1,5 +1,4 @@
 defmodule SimpleModule do
-
   use SimpleMacro
 
   # use function at compile-time
