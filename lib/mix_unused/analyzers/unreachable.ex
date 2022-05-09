@@ -1,12 +1,12 @@
 defmodule MixUnused.Analyzers.Unreachable do
   @moduledoc """
-  Finds all the reachable functions starting from a set of entrypoints.
+  Finds all the reachable functions starting from a set of well-known used functions.
   All remaining functions are considered "unused".
   """
 
   alias MixUnused.Analyzers.Calls
   alias MixUnused.Analyzers.Unreachable.Config
-  alias MixUnused.Analyzers.Unreachable.Entrypoints
+  alias MixUnused.Analyzers.Unreachable.Usages
   alias MixUnused.Meta
 
   @behaviour MixUnused.Analyze
@@ -18,13 +18,13 @@ defmodule MixUnused.Analyzers.Unreachable do
   def analyze(data, functions, config) do
     config = Config.cast(config)
     graph = Calls.calls_graph(data, functions)
-    entrypoints = Entrypoints.entrypoints(config, functions)
-    reachables = graph |> Graph.reachable(entrypoints) |> MapSet.new()
+    usages = Usages.usages(config, functions)
+    reachables = graph |> Graph.reachable(usages) |> MapSet.new()
     called_at_compile_time = Calls.called_at_compile_time(data, functions)
 
     for {mfa, _meta} = call <- functions,
         candidate?(call),
-        mfa not in entrypoints,
+        mfa not in usages,
         mfa not in reachables,
         mfa not in called_at_compile_time,
         into: %{},

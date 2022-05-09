@@ -77,7 +77,7 @@ defmodule MixUnused.Analyzers.UnusedTest do
 
     assert %{} ==
              @subject.analyze(calls, functions, %{
-               entrypoints: [{Foo, :b, 1}]
+               usages: [{Foo, :b, 1}]
              })
   end
 end

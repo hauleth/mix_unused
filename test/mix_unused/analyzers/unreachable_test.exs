@@ -17,7 +17,7 @@ defmodule MixUnused.Analyzers.UnreachableTest do
 
     assert %{} ==
              @subject.analyze(calls, %{function => %Meta{}}, %{
-               entrypoints: [{Bar, :b, 1}]
+               usages: [{Bar, :b, 1}]
              })
   end
 
@@ -37,7 +37,7 @@ defmodule MixUnused.Analyzers.UnreachableTest do
 
     assert %{} ==
              @subject.analyze(calls, functions, %{
-               entrypoints: [{Bar, :c, 1}]
+               usages: [{Bar, :c, 1}]
              })
   end
 
@@ -47,7 +47,7 @@ defmodule MixUnused.Analyzers.UnreachableTest do
 
     assert %{} ==
              @subject.analyze(calls, %{function => %Meta{}}, %{
-               entrypoints: [{Foo, :b, 1}]
+               usages: [{Foo, :b, 1}]
              })
   end
 
@@ -56,7 +56,7 @@ defmodule MixUnused.Analyzers.UnreachableTest do
 
     assert %{^function => _} =
              @subject.analyze(%{}, %{function => %Meta{}}, %{
-               entrypoints: [{Foo, :b, 1}]
+               usages: [{Foo, :b, 1}]
              })
   end
 
@@ -86,7 +86,7 @@ defmodule MixUnused.Analyzers.UnreachableTest do
 
     assert %{} ==
              @subject.analyze(calls, functions, %{
-               entrypoints: [{Foo, :b, 1}]
+               usages: [{Foo, :b, 1}]
              })
   end
 

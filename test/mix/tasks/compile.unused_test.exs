@@ -103,7 +103,7 @@ defmodule Mix.Tasks.Compile.UnusedTest do
                  Unreachable
                )
 
-        # SimpleServer functions are callbacks defined as entrypoints and are not reported
+        # SimpleServer functions are callbacks defined as used and are not reported
         refute find_diagnostics_for(
                  diagnostics,
                  {SimpleServer, :init, 1},

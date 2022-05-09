@@ -1,5 +1,5 @@
 defmodule SimpleServer do
-  # this module has been declared as entrypoint
+  # this module has been declared as used
 
   use GenServer
 

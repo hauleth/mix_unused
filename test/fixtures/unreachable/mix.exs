@@ -10,7 +10,7 @@ defmodule MixUnused.Fixtures.UnreachableProject do
         checks: [
           {MixUnused.Analyzers.Unreachable,
            %{
-             entrypoints: [
+             usages: [
                SimpleServer
              ]
            }}

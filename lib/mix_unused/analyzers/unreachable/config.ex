@@ -4,14 +4,14 @@ defmodule MixUnused.Analyzers.Unreachable.Config do
   alias __MODULE__, as: Config
 
   @type t :: %Config{
-          entrypoints: [module() | mfa()],
-          entrypoints_discovery: [module()]
+          usages: [module() | mfa()],
+          usages_discovery: [module()]
         }
 
-  defstruct entrypoints: [],
-            entrypoints_discovery: [
-              MixUnused.Analyzers.Unreachable.Entrypoints.AmqpxConsumersDiscovery,
-              MixUnused.Analyzers.Unreachable.Entrypoints.HttpMockPalDiscovery
+  defstruct usages: [],
+            usages_discovery: [
+              MixUnused.Analyzers.Unreachable.Usages.AmqpxConsumersDiscovery,
+              MixUnused.Analyzers.Unreachable.Usages.HttpMockPalDiscovery
             ]
 
   @spec cast(Enum.t()) :: Config.t()

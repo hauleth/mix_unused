@@ -1,12 +1,12 @@
-defmodule MixUnused.Analyzers.Unreachable.Entrypoints.AmqpxConsumersDiscovery do
+defmodule MixUnused.Analyzers.Unreachable.Usages.AmqpxConsumersDiscovery do
   @moduledoc """
   Discovers the consumers configured for the [amqpx library](https://hex.pm/packages/amqpx).
   """
 
-  @behaviour MixUnused.Analyzers.Unreachable.Entrypoints
+  @behaviour MixUnused.Analyzers.Unreachable.Usages
 
   @impl true
-  def discover_entrypoints(_opts) do
+  def discover_usages(_opts) do
     app = Mix.Project.config()[:app]
 
     for %{handler_module: module} <- Application.get_env(app, :consumers, []) do
