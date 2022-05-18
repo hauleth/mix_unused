@@ -144,6 +144,7 @@ defmodule Mix.Tasks.Compile.Unused do
     |> MixUnused.Analyze.analyze(data, all_functions, config)
     |> filter_files_in_paths(config.paths)
     |> Enum.sort_by(&{&1.file, &1.position, &1.details.mfa})
+    |> limit_results(config.limit)
     |> tap_all(&print_diagnostic/1)
     |> case do
       [] ->
@@ -190,6 +191,9 @@ defmodule Mix.Tasks.Compile.Unused do
       root in paths
     end)
   end
+
+  defp limit_results(diags, nil), do: diags
+  defp limit_results(diags, limit), do: Enum.take(diags, limit)
 
   defp print_diagnostic(%Diagnostic{details: %{mfa: {_, :__struct__, 1}}}),
     do: nil

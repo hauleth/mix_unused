@@ -4,6 +4,7 @@ defmodule MixUnused.Config do
   @type t :: %__MODULE__{
           checks: [MixUnused.Analyze.analyzer()],
           ignore: [mfa()],
+          limit: integer() | nil,
           paths: [String.t()] | nil,
           severity: :hint | :information | :warning | :error,
           warnings_as_errors: boolean()
@@ -15,6 +16,7 @@ defmodule MixUnused.Config do
               MixUnused.Analyzers.RecursiveOnly
             ],
             ignore: [],
+            limit: nil,
             paths: nil,
             severity: :hint,
             warnings_as_errors: false
@@ -37,6 +39,7 @@ defmodule MixUnused.Config do
     config
     |> maybe_set(:checks, mix_config[:checks])
     |> maybe_set(:ignore, mix_config[:ignore])
+    |> maybe_set(:limit, mix_config[:limit])
     |> maybe_set(:paths, mix_config[:paths])
     |> maybe_set(:severity, mix_config[:severity])
     |> maybe_set(:warnings_as_errors, mix_config[:warnings_as_errors])
