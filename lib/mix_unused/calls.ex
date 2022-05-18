@@ -1,6 +1,7 @@
 defmodule MixUnused.Analyzers.Calls do
   @moduledoc false
 
+  alias MixUnused.Debug
   alias MixUnused.Exports
   alias MixUnused.Meta
   alias MixUnused.Tracer
@@ -14,6 +15,7 @@ defmodule MixUnused.Analyzers.Calls do
     Graph.new(type: :directed)
     |> add_calls(data)
     |> add_calls_from_default_functions(functions)
+    |> Debug.log_graph()
   end
 
   defp add_calls(graph, data) do

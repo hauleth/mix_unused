@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - add the `MixUnused.Analyzers.Unreachable` analyzer, alternative to the `Unused` one
 - add `paths` configuration option to report only functions defined in such paths
 - make the `checks` options overridable
+- log debug information if the `MIX_UNUSED_DEBUG` env var is set to `true`
 
 ### Bug Fixes
 - detect usage of functions called with default arguments
