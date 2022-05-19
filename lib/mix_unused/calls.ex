@@ -15,7 +15,7 @@ defmodule MixUnused.Analyzers.Calls do
     Graph.new(type: :directed)
     |> add_calls(data)
     |> add_calls_from_default_functions(functions)
-    |> Debug.log_graph()
+    |> Debug.debug(&log_graph/1)
   end
 
   defp add_calls(graph, data) do
@@ -51,5 +51,42 @@ defmodule MixUnused.Analyzers.Calls do
         Map.has_key?(functions, mfa),
         into: MapSet.new(),
         do: mfa
+  end
+
+  defp log_graph(graph) do
+    write_edgelist(graph)
+    write_binary(graph)
+  end
+
+  defp write_edgelist(graph) do
+    {:ok, content} = Graph.to_edgelist(graph)
+    path = Path.join(Mix.Project.manifest_path(), "graph.txt")
+    File.write!(path, content)
+
+    Mix.shell().info([
+      IO.ANSI.yellow_background(),
+      "Serialized edgelist to #{path}",
+      :reset
+    ])
+  end
+
+  defp write_binary(graph) do
+    content = :erlang.term_to_binary(graph)
+    path = Path.join(Mix.Project.manifest_path(), "graph.bin")
+    File.write!(path, content)
+
+    Mix.shell().info([
+      IO.ANSI.yellow_background(),
+      "Serialized graph to #{path}",
+      IO.ANSI.reset(),
+      IO.ANSI.light_black(),
+      "\n\nTo use it from iex:\n",
+      ~s{
+        Mix.install([libgraph: ">= 0.0.0"])
+        graph = "#{path}" |> File.read!() |> :erlang.binary_to_term()
+        Graph.info(graph)
+      },
+      IO.ANSI.reset()
+    ])
   end
 end

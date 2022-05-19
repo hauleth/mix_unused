@@ -47,7 +47,8 @@ defmodule MixUnused.Analyzers.Unreachable.Usages do
     Mix.shell().info([
       IO.ANSI.light_black(),
       "Found usages: \n",
-      modules |> Enum.map(fn {m, f, a} -> " - #{m}.#{f}/#{a}" end) |> Enum.join("\n"),
+      modules
+      |> Enum.map_join("\n", fn {m, f, a} -> " - #{m}.#{f}/#{a}" end),
       "\n",
       IO.ANSI.reset()
     ])
