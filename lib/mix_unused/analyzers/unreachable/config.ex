@@ -11,7 +11,9 @@ defmodule MixUnused.Analyzers.Unreachable.Config do
   defstruct usages: [],
             usages_discovery: [
               MixUnused.Analyzers.Unreachable.Usages.AmqpxConsumersDiscovery,
-              MixUnused.Analyzers.Unreachable.Usages.HttpMockPalDiscovery
+              MixUnused.Analyzers.Unreachable.Usages.HttpMockPalDiscovery,
+              MixUnused.Analyzers.Unreachable.Usages.PhoenixControllersDiscovery,
+              MixUnused.Analyzers.Unreachable.Usages.SupervisorDiscovery
             ]
 
   @spec cast(Enum.t()) :: Config.t()

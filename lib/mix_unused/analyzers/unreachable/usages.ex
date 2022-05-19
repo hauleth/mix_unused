@@ -4,7 +4,7 @@ defmodule MixUnused.Analyzers.Unreachable.Usages do
   alias MixUnused.Analyzers.Unreachable.Config
   alias MixUnused.Exports
 
-  @callback discover_usages(context :: map()) :: [mfa()]
+  @callback discover_usages(context :: Keyword.t()) :: [mfa()]
 
   @spec usages(Config.t(), Exports.t()) :: [mfa()]
   def usages(
@@ -12,26 +12,26 @@ defmodule MixUnused.Analyzers.Unreachable.Usages do
           usages: usages,
           usages_discovery: usages_discovery
         },
-        functions
+        exports
       ) do
-    declared_usages(usages, functions) ++
-      discovered_usages(usages_discovery)
+    declared_usages(usages, exports) ++
+      discovered_usages(usages_discovery, exports)
   end
 
-  defp declared_usages(hints, functions) do
+  defp declared_usages(hints, exports) do
     Enum.flat_map(hints, fn
       {m, f, a} -> [{m, f, a}]
-      m -> for {^m, f, a} <- Map.keys(functions), do: {m, f, a}
+      m -> for {^m, f, a} <- Map.keys(exports), do: {m, f, a}
     end)
   end
 
-  defp discovered_usages(hints) do
+  defp discovered_usages(hints, exports) do
     for module <- hints do
       [
         # the module is itself an used module since it
         #  could call functions created specifically for it
         {module, :discover_usages, 1}
-        | apply(module, :discover_usages, [%{}])
+        | apply(module, :discover_usages, [[exports: exports]])
       ]
     end
     |> List.flatten()
