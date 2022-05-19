@@ -9,7 +9,7 @@ defmodule MixUnused.Analyzers.Unreachable.Usages.VmstatsDiscovery do
   def discover_usages(_context) do
     case Application.get_env(:vmstats, :sink) do
       nil -> []
-      module -> [{module, :collect, 2}]
+      module -> [{module, :collect, 3}]
     end
   end
 end
