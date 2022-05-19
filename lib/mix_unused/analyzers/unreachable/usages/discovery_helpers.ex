@@ -1,6 +1,6 @@
 defmodule MixUnused.Analyzers.Unreachable.Usages.DiscoveryHelpers do
   @moduledoc false
-  
+
   alias MixUnused.Exports
   alias MixUnused.Meta
 
