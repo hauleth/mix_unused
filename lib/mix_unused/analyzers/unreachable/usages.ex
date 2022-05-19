@@ -3,6 +3,7 @@ defmodule MixUnused.Analyzers.Unreachable.Usages do
 
   alias MixUnused.Analyzers.Unreachable.Config
   alias MixUnused.Exports
+  alias MixUnused.Debug
 
   @callback discover_usages(context :: Keyword.t()) :: [mfa()]
 
@@ -14,8 +15,13 @@ defmodule MixUnused.Analyzers.Unreachable.Usages do
         },
         exports
       ) do
-    declared_usages(usages, exports) ++
-      discovered_usages(usages_discovery, exports)
+    modules =
+      Enum.concat(
+        declared_usages(usages, exports),
+        discovered_usages(usages_discovery, exports)
+      )
+
+    Debug.debug(modules, &debug/1)
   end
 
   defp declared_usages(hints, exports) do
@@ -35,5 +41,15 @@ defmodule MixUnused.Analyzers.Unreachable.Usages do
       ]
     end
     |> List.flatten()
+  end
+
+  defp debug(modules) do
+    Mix.shell().info([
+      IO.ANSI.light_black(),
+      "Found usages: \n",
+      modules |> Enum.map(fn {m, f, a} -> " - #{m}.#{f}/#{a}" end) |> Enum.join("\n"),
+      "\n",
+      IO.ANSI.reset()
+    ])
   end
 end
