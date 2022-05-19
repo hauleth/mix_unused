@@ -13,7 +13,8 @@ defmodule MixUnused.Analyzers.Unreachable.Config do
               MixUnused.Analyzers.Unreachable.Usages.AmqpxConsumersDiscovery,
               MixUnused.Analyzers.Unreachable.Usages.HttpMockPalDiscovery,
               MixUnused.Analyzers.Unreachable.Usages.PhoenixControllersDiscovery,
-              MixUnused.Analyzers.Unreachable.Usages.SupervisorDiscovery
+              MixUnused.Analyzers.Unreachable.Usages.SupervisorDiscovery,
+              MixUnused.Analyzers.Unreachable.Usages.VmstatsDiscovery
             ]
 
   @spec cast(Enum.t()) :: Config.t()
