@@ -11,10 +11,10 @@ defmodule MixUnused.Analyzers.Calls do
   means that the function `f` calls `g`.
   """
   @spec calls_graph(Tracer.data(), Exports.t()) :: Graph.t()
-  def calls_graph(data, functions) do
+  def calls_graph(data, exports) do
     Graph.new(type: :directed)
     |> add_calls(data)
-    |> add_calls_from_default_functions(functions)
+    |> add_calls_from_default_functions(exports)
     |> Debug.debug(&log_graph/1)
   end
 
@@ -26,13 +26,13 @@ defmodule MixUnused.Analyzers.Calls do
     end
   end
 
-  defp add_calls_from_default_functions(graph, functions) do
+  defp add_calls_from_default_functions(graph, exports) do
     # A function with default arguments is splitted at compile-time in multiple functions
     #  with different arities.
     #  The main function is indirectly called when a function with default arguments is called,
     #  so the graph should contain an edge for each generated function (from the generated
     #  function to the main one).
-    for {{m, f, a} = mfa, %Meta{doc_meta: meta}} <- functions,
+    for {{m, f, a} = mfa, %Meta{doc_meta: meta}} <- exports,
         defaults = Map.get(meta, :defaults, 0),
         defaults > 0,
         arity <- (a - defaults)..(a - 1),
@@ -42,13 +42,13 @@ defmodule MixUnused.Analyzers.Calls do
   end
 
   @doc """
-  Gets all the functions called from some module at compile-time.
+  Gets all the exported functions called from some module at compile-time.
   """
   @spec called_at_compile_time(Tracer.data(), Exports.t()) :: [mfa()]
-  def called_at_compile_time(data, functions) do
+  def called_at_compile_time(data, exports) do
     for {_m, calls} <- data,
         {mfa, %{caller: nil}} <- calls,
-        Map.has_key?(functions, mfa),
+        Map.has_key?(exports, mfa),
         into: MapSet.new(),
         do: mfa
   end

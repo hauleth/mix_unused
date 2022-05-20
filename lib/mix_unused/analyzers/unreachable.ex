@@ -1,6 +1,6 @@
 defmodule MixUnused.Analyzers.Unreachable do
   @moduledoc """
-  Finds all the reachable functions starting from a set of well-known used functions.
+  Finds all the reachable exported functions starting from a set of well-known used functions.
   All remaining functions are considered "unused".
   """
 
@@ -15,14 +15,14 @@ defmodule MixUnused.Analyzers.Unreachable do
   def message, do: "is unreachable"
 
   @impl true
-  def analyze(data, functions, config) do
+  def analyze(data, exports, config) do
     config = Config.cast(config)
-    graph = Calls.calls_graph(data, functions)
-    usages = Usages.usages(config, functions)
+    graph = Calls.calls_graph(data, exports)
+    usages = Usages.usages(config, exports)
     reachables = graph |> Graph.reachable(usages) |> MapSet.new()
-    called_at_compile_time = Calls.called_at_compile_time(data, functions)
+    called_at_compile_time = Calls.called_at_compile_time(data, exports)
 
-    for {mfa, _meta} = call <- functions,
+    for {mfa, _meta} = call <- exports,
         candidate?(call),
         mfa not in usages,
         mfa not in reachables,
@@ -31,7 +31,7 @@ defmodule MixUnused.Analyzers.Unreachable do
         do: call
   end
 
-  # Clause to detect an unused struct
+  # Clause to detect an unused struct (it is generated)
   defp candidate?({{_f, :__struct__, _a}, _meta}), do: true
   # Clause to ignore all generated functions
   defp candidate?({_mfa, %Meta{generated: true}}), do: false

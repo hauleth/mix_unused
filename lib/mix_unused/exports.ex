@@ -89,8 +89,8 @@ defmodule MixUnused.Exports do
   end
 
   defp user_functions(docs) do
-    # Guess functions that are not generated at compile-time by checking
-    # if there are multiple functions defined at the same position.
+    # Hack: guess functions that are not generated at compile-time by
+    # checking if there are multiple functions defined at the same position.
     docs
     |> Enum.group_by(fn {_item, anno, _sig, _doc, _meta} -> anno end)
     |> Enum.filter(&match?({_, [_]}, &1))
