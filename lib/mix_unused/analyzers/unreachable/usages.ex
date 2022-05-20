@@ -8,9 +8,10 @@ defmodule MixUnused.Analyzers.Unreachable.Usages do
   @callback discover_usages(context :: Keyword.t()) :: [mfa()]
 
   @default_discoveries [
+    MixUnused.Analyzers.Unreachable.Usages.AbsintheDiscovery,
     MixUnused.Analyzers.Unreachable.Usages.AmqpxConsumersDiscovery,
     MixUnused.Analyzers.Unreachable.Usages.HttpMockPalDiscovery,
-    MixUnused.Analyzers.Unreachable.Usages.PhoenixControllersDiscovery,
+    MixUnused.Analyzers.Unreachable.Usages.PhoenixDiscovery,
     MixUnused.Analyzers.Unreachable.Usages.SupervisorDiscovery,
     MixUnused.Analyzers.Unreachable.Usages.VmstatsDiscovery
   ]
