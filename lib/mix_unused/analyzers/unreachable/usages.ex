@@ -7,6 +7,14 @@ defmodule MixUnused.Analyzers.Unreachable.Usages do
 
   @callback discover_usages(context :: Keyword.t()) :: [mfa()]
 
+  @default_discoveries [
+    MixUnused.Analyzers.Unreachable.Usages.AmqpxConsumersDiscovery,
+    MixUnused.Analyzers.Unreachable.Usages.HttpMockPalDiscovery,
+    MixUnused.Analyzers.Unreachable.Usages.PhoenixControllersDiscovery,
+    MixUnused.Analyzers.Unreachable.Usages.SupervisorDiscovery,
+    MixUnused.Analyzers.Unreachable.Usages.VmstatsDiscovery
+  ]
+
   @spec usages(Config.t(), Exports.t()) :: [mfa()]
   def usages(
         %Config{
@@ -18,12 +26,13 @@ defmodule MixUnused.Analyzers.Unreachable.Usages do
     modules =
       Enum.concat(
         declared_usages(usages, exports),
-        discovered_usages(usages_discovery, exports)
+        discovered_usages(usages_discovery ++ @default_discoveries, exports)
       )
 
     Debug.debug(modules, &debug/1)
   end
 
+  @spec declared_usages([module() | mfa()], Exports.t()) :: [mfa()]
   defp declared_usages(hints, exports) do
     Enum.flat_map(hints, fn
       {m, f, a} -> [{m, f, a}]
@@ -31,11 +40,12 @@ defmodule MixUnused.Analyzers.Unreachable.Usages do
     end)
   end
 
-  defp discovered_usages(hints, exports) do
-    for module <- hints do
+  @spec discovered_usages([module()], Exports.t()) :: [mfa()]
+  defp discovered_usages(modules, exports) do
+    for module <- modules do
       [
         # the module is itself an used module since it
-        #  could call functions created specifically for it
+        # could call functions created specifically for it
         {module, :discover_usages, 1}
         | apply(module, :discover_usages, [[exports: exports]])
       ]
