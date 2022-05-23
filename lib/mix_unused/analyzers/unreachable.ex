@@ -23,7 +23,8 @@ defmodule MixUnused.Analyzers.Unreachable do
     called_at_compile_time = Calls.called_at_compile_time(data, exports)
 
     for {mfa, _meta} = call <- exports,
-        candidate?(call),
+        filter_transitive_call?(config, graph, mfa),
+        filter_generated_function?(call),
         mfa not in usages,
         mfa not in reachables,
         mfa not in called_at_compile_time,
@@ -31,9 +32,18 @@ defmodule MixUnused.Analyzers.Unreachable do
         do: call
   end
 
+  @spec filter_transitive_call?(Config.t(), Graph.t(), mfa()) :: boolean()
+  defp filter_transitive_call?(
+         %Config{report_transitively_unused: report_transitively_unused},
+         graph,
+         mfa
+       ) do
+    report_transitively_unused or Graph.in_degree(graph, mfa) == 0
+  end
+
   # Clause to detect an unused struct (it is generated)
-  defp candidate?({{_f, :__struct__, _a}, _meta}), do: true
+  defp filter_generated_function?({{_f, :__struct__, _a}, _meta}), do: true
   # Clause to ignore all generated functions
-  defp candidate?({_mfa, %Meta{generated: true}}), do: false
-  defp candidate?(_), do: true
+  defp filter_generated_function?({_mfa, %Meta{generated: true}}), do: false
+  defp filter_generated_function?(_), do: true
 end

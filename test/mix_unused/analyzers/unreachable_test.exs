@@ -60,7 +60,7 @@ defmodule MixUnused.Analyzers.UnreachableTest do
              })
   end
 
-  test "transitive functions are reported" do
+  test "transitively unused functions are reported when the related is enabled" do
     function_a = {Foo, :a, 1}
     function_b = {Foo, :b, 1}
 
@@ -75,11 +75,30 @@ defmodule MixUnused.Analyzers.UnreachableTest do
              @subject.analyze(
                calls,
                %{function_a => %Meta{}, function_b => %Meta{}},
-               %{}
+               %{report_transitively_unused: true}
              )
   end
 
-  test "functions called with default arguments are not reported" do
+  test "transitively unused functions are not reported by default" do
+    function_a = {Foo, :a, 1}
+    function_b = {Foo, :b, 1}
+
+    calls = %{
+      Foo => [{function_b, %{caller: {:a, 1}}}]
+    }
+
+    out =
+      @subject.analyze(
+        calls,
+        %{function_a => %Meta{}, function_b => %Meta{}},
+        %{}
+      )
+
+    assert %{^function_a => _} = out
+    assert not is_map_key(out, function_b)
+  end
+
+  test "exported functions called with default arguments are not reported" do
     function = {Foo, :a, 1}
     functions = %{function => %Meta{doc_meta: %{defaults: 1}}}
     calls = %{Foo => [{{Foo, :a, 0}, %{caller: {:b, 1}}}]}

@@ -124,25 +124,28 @@ defmodule Mix.Tasks.Compile.UnusedTest do
                  Unreachable
                )
 
+        # UnusedStruct is never used
         assert find_diagnostics_for(
                  diagnostics,
                  {UnusedStruct, :__struct__, 0},
                  Unreachable
                )
 
+        # UnusedStruct.unused/0 is the root of an unused subgraph
         assert find_diagnostics_for(
                  diagnostics,
                  {UnusedStruct, :unused, 0},
                  Unreachable
                )
 
-        assert find_diagnostics_for(
+        # SimpleModule.used_from_unused/0 is not the root of an unused subgraph
+        refute find_diagnostics_for(
                  diagnostics,
                  {SimpleModule, :used_from_unused, 0},
                  Unreachable
                )
 
-        assert 3 == length(diagnostics), output
+        assert 2 == length(diagnostics), output
       end)
     end
   end
