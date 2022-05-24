@@ -1,11 +1,23 @@
 defmodule MixUnused.Analyzers.Unreachable.Usages do
-  @moduledoc false
+  @moduledoc """
+  Provides the starting points for the [Unreachable](`MixUnused.Analyzers.Unreachable`) analyzer.
+  """
 
   alias MixUnused.Analyzers.Unreachable.Config
   alias MixUnused.Exports
   alias MixUnused.Debug
 
-  @callback discover_usages(context :: Keyword.t()) :: [mfa()]
+  @type context :: [
+          exports: Exports.t()
+        ]
+
+  @doc """
+  Called during the analysis to search potential used functions.
+
+  It receives the map of all the exported functions and returns
+  the list of found functions.
+  """
+  @callback discover_usages(context()) :: [mfa()]
 
   @default_discoveries [
     MixUnused.Analyzers.Unreachable.Usages.AbsintheDiscovery,

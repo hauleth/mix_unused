@@ -1,12 +1,28 @@
 defmodule MixUnused.Analyzers.Unreachable.Usages.PhoenixDiscovery do
   @moduledoc """
-  Discovers some resources used by the Phoenix router:
-  * controllers;
-  * plugs declared in the pipelines.
+  Discovers some components used dynamically by the [Phoenix framework](https://www.phoenixframework.org/).
 
-  Caveats:
-  * it does not check if a pipeline is actually used;
-  * it does not resolve controller aliases properly if they are relative to the current scope.
+  ## Controllers
+
+  It reads the content of any file named _router.ex_ looking for calls in the form `method Controller, :name` (where `method` is `get`, `post`, etc.), then it considers all the referred functions (i.e. `Controller.name/2`) as used.
+
+  It properly resolves aliases, but at this time it does not recognise "scoped" controllers; so if you have something like:
+
+      scope "/", App do
+        get "/", PageController, :index
+      end
+
+  You should use the full module name or an alias:
+
+      scope "/" do
+        get "/", App.PageController, :index
+      end
+
+  ## Plugs
+
+  It reads the content of any file named _router.ex_ looking for calls in the form `plug Module, ...`, then it considers all the related functions (i.e. `Module.init/1` and `Module.call/2`) as used.
+
+  Note: generally plugs are defined inside pipelines, but the discovery module currently does not check if a pipeline is actually used.
   """
 
   alias MixUnused.Analyzers.Unreachable.Usages.Helpers.Aliases

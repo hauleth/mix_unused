@@ -28,8 +28,22 @@ defmodule MixUnused.MixProject do
       ],
       docs: [
         extras: [
+          "README.md": [title: "Overview"],
           "CHANGELOG.md": [],
-          LICENSE: [title: "License"]
+          LICENSE: [title: "License"],
+          "guides/unreachable-analyzer.md": [
+            title: "Using the Unreachable analyzer"
+          ]
+        ],
+        groups_for_extras: [
+          Guides: ~r"guides/"
+        ],
+        groups_for_modules: [
+          "Usages discovery": ~r"MixUnused.Analyzers.Unreachable.Usages.\w+$"
+        ],
+        nest_modules_by_prefix: [
+          MixUnused.Analyzers,
+          MixUnused.Analyzers.Unreachable.Usages
         ],
         main: "Mix.Tasks.Compile.Unused",
         source_url: @source_url,

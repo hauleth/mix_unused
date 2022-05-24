@@ -1,6 +1,13 @@
 defmodule MixUnused.Analyzers.Unreachable.Usages.AbsintheDiscovery do
   @moduledoc """
-  Discovers the modules used by [Absinthe](https://hex.pm/packages/absinthe).
+  Discovers some components used dynamically by [Absinthe](http://absinthe-graphql.org/).
+
+  It analyses all the modules exposing the function `__absinthe_function__` (schemas, type definitions, etc.)
+  looking for the following patterns:
+  * `middleware Module, ...`: consider the function `Module.call/2` as used.
+
+  It assumes that the `__absinthe_function__` functions are used too.
+  This could be wrong if the related schemas are not referred anywhere.
   """
 
   alias MixUnused.Analyzers.Unreachable.Usages.Helpers.Aliases

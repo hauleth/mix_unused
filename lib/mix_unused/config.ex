@@ -22,6 +22,7 @@ defmodule MixUnused.Config do
             warnings_as_errors: false
 
   @options [
+    limit: :integer,
     severity: :string,
     warnings_as_errors: :boolean
   ]
@@ -47,6 +48,7 @@ defmodule MixUnused.Config do
 
   defp extract_opts(%__MODULE__{} = config, opts) do
     config
+    |> maybe_set(:limit, opts[:limit])
     |> maybe_set(:severity, opts[:severity], &severity/1)
     |> maybe_set(:warnings_as_errors, opts[:warnings_as_errors])
   end

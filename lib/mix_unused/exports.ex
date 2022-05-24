@@ -1,5 +1,9 @@
 defmodule MixUnused.Exports do
-  @moduledoc false
+  @moduledoc """
+  Detects the functions exported by the application.
+
+  In Elixir slang, an "exported" function is called "public" function.
+  """
 
   alias MixUnused.Meta
 

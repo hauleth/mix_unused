@@ -32,7 +32,7 @@ defmodule MySystem.MixProject do
 
   def project do
     [
-      compilers: [:unused] ++ Mix.compilers(),
+      compilers: [:unused | Mix.compilers()],
       # In case of Phoenix projects you need to add it to the list
       # compilers: [:unused, :phoenix, :gettext] ++ Mix.compilers()
       # ...
@@ -40,6 +40,38 @@ defmodule MySystem.MixProject do
   end
 
   # ...
+end
+```
+
+The tool keeps track of the calls traced during the compilation. The first time make sure that there is no compiled code:
+
+```shell
+mix clean
+```
+
+Doing so all the application code is recompiled and the calls are traced properly.
+
+It is recommended to also perform a clean in the CI when the build does not start from a fresh project, for instance:
+
+```shell
+mix do clean, compile --all-warnings --warnings-as-errors
+```
+
+Please make sure you don't improperly override the clean task with an alias:
+
+```elixir
+def project do
+  [
+    # ⋯
+    aliases: [
+      # don't do this:
+      clean: "deps.unlock --unused",
+
+      # do this:
+      clean: ["clean", "deps.unlock --unused"],
+    ],
+    # ⋯
+  ]
 end
 ```
 
@@ -55,24 +87,63 @@ So this mean that, for example, if you have custom `child_spec/1` definition
 then `mix unused` can return such function as unused even when you are using
 that indirectly in your supervisor.
 
+This issue can be mitigated using the `Unreachable` check, explained below.
+
 ### Configuration
 
-You can define used functions by adding `mfa` in `unused: [ignored: [⋯]]`
-in your project configuration:
+You can configure the tool using the `unused` options in the project configuration.
+The following is the default configuration.
 
 ```elixir
 def project do
   [
     # ⋯
     unused: [
-      ignore: [
-        {MyApp.Foo, :child_spec, 1}
-      ]
+      checks: [
+        # find public functions that could be private
+        MixUnused.Analyzers.Private,
+        # find unused public functions
+        MixUnused.Analyzers.Unused,
+        # find functions called only recursively
+        MixUnused.Analyzers.RecursiveOnly
+      ],
+      ignore: [],
+      limit: nil,
+      paths: nil,
+      severity: :hint
     ],
     # ⋯
   ]
 end
 ```
+
+It supports the following options:
+
+* `checks`: list of analyzer modules to use.
+
+    In alternative to the default set, you can use the [MixUnused.Analyzers.Unreachable](`MixUnused.Analyzers.Unreachable`) check (see the specific [guide](guides/unreachable-analyzer.md)).
+
+* `ignore`: list of ignored functions, example:
+
+    ```elixir
+    [
+      {:_, ~r/^__.+__\??$/, :_},
+      {~r/^MyAppWeb\..*Controller/, :_, 2},
+      {MyApp.Test, :foo, 1..2}
+    ]
+    ```
+
+    See the [Mix.Tasks.Compile.Unused](`Mix.Tasks.Compile.Unused`) task for further details.
+
+* `limit`: max number of results to report (available also as the command option `--limit`).
+
+* `paths`: report only functions defined in such paths.
+
+    Useful to restrict the reported functions only to the functions defined in specific paths
+    (i.e. set `paths: ["lib"]` to ignore functions defined in the `tests` folder).
+
+* `severity`: severity of the reported messages.
+  Allowed levels are `:hint`, `:information`, `:warning`, and `:error`.
 
 ## Copyright and License
 

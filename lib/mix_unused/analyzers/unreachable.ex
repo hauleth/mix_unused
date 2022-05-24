@@ -1,7 +1,6 @@
 defmodule MixUnused.Analyzers.Unreachable do
   @moduledoc """
-  Finds all the reachable exported functions starting from a set of well-known used functions.
-  All remaining functions are considered "unused".
+  Reports all the exported functions that are not reachable from a set of well-known used functions.
   """
 
   alias MixUnused.Analyzers.Calls

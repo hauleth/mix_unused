@@ -1,5 +1,7 @@
 defmodule MixUnused.Analyzers.Unreachable.Config do
-  @moduledoc false
+  @moduledoc """
+  Configuration specific to the [Unreachable](`MixUnused.Analyzers.Unreachable`) analyzer.
+  """
 
   alias __MODULE__, as: Config
 
