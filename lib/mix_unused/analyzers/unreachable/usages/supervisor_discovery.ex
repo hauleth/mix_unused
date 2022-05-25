@@ -41,6 +41,7 @@ defmodule MixUnused.Analyzers.Unreachable.Usages.SupervisorDiscovery do
     "supervisor.ex"
     |> Source.read_sources_with_suffix(exports)
     |> Enum.flat_map(&analyze(&1, exports))
+    |> Enum.uniq()
   end
 
   defp analyze(ast, exports) do

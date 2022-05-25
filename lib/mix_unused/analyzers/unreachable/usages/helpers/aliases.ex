@@ -30,7 +30,8 @@ defmodule MixUnused.Analyzers.Unreachable.Usages.Helpers.Aliases do
 
   @spec resolve(t(), [atom]) :: module()
   def resolve(aliases, atoms) do
-    module = Module.concat(atoms)
-    Map.get(aliases, module, module)
+    {base_atom, rest} = Enum.split(atoms, 1)
+    base_module = Module.concat(base_atom)
+    Module.concat([Map.get(aliases, base_module, base_module) | rest])
   end
 end

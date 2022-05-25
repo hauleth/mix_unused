@@ -19,12 +19,13 @@ defmodule MixUnused.MixProject do
         }
       ],
       deps: [
-        {:libgraph, ">= 0.0.0"},
+        {:covertool, "~> 2.0", only: :test},
         {:credo, ">= 0.0.0", only: :dev, runtime: false},
-        {:ex_doc, ">= 0.0.0", only: :dev, runtime: false},
         {:dialyxir, "~> 1.0", only: :dev, runtime: false},
-        {:stream_data, ">= 0.0.0", only: [:test, :dev]},
-        {:covertool, "~> 2.0", only: :test}
+        {:ex_doc, ">= 0.0.0", only: :dev, runtime: false},
+        {:libgraph, ">= 0.0.0"},
+        {:mock, "~> 0.3.7", only: :test},
+        {:stream_data, ">= 0.0.0", only: [:test, :dev]}
       ],
       docs: [
         extras: [
