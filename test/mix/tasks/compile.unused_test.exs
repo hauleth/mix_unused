@@ -124,6 +124,21 @@ defmodule Mix.Tasks.Compile.UnusedTest do
                  Unreachable
                )
 
+        # SimpleModule.used_from_unused/0 is not the root of an unused subgraph
+        refute find_diagnostics_for(
+                 diagnostics,
+                 {SimpleModule, :used_from_unused, 0},
+                 Unreachable
+               )
+
+        #  SimpleModule.public_used_by_unused_private/0 is used by unused private.
+        # not being a root it is not reported, bu the elixir compiler will catch the private
+        refute find_diagnostics_for(
+                 diagnostics,
+                 {SimpleModule, :public_used_by_unused_private, 0},
+                 Unreachable
+               )
+
         # UnusedStruct is never used
         assert find_diagnostics_for(
                  diagnostics,
@@ -138,14 +153,25 @@ defmodule Mix.Tasks.Compile.UnusedTest do
                  Unreachable
                )
 
-        # SimpleModule.used_from_unused/0 is not the root of an unused subgraph
-        refute find_diagnostics_for(
+        # SimpleModule.public_unused/0 is never used nor called by anyone
+        assert find_diagnostics_for(
                  diagnostics,
-                 {SimpleModule, :used_from_unused, 0},
+                 {SimpleModule, :public_unused, 0},
                  Unreachable
                )
 
-        assert 2 == length(diagnostics), output
+        # by defining (synth test) an unused private function we cause a (Elixir's) compiler warning
+        elixir_warnings =
+          diagnostics |> Enum.filter(&(&1.compiler_name == "Elixir"))
+
+        assert 1 == length(elixir_warnings)
+
+        assert diagnostics
+               |> Enum.any?(
+                 &(&1.message == "function private_unused/0 is unused")
+               )
+
+        assert 4 == length(diagnostics), output
       end)
     end
   end
@@ -284,7 +310,8 @@ defmodule Mix.Tasks.Compile.UnusedTest do
   defp find_diagnostics_for(diagnostics, mfa, analyzer) do
     Enum.find(
       diagnostics,
-      &(&1.details.mfa == mfa and &1.details.analyzer == analyzer)
+      &(&1.compiler_name == "unused" and &1.details.mfa == mfa and
+          &1.details.analyzer == analyzer)
     )
   end
 end

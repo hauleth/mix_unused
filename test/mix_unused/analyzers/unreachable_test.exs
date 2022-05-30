@@ -11,17 +11,49 @@ defmodule MixUnused.Analyzers.UnreachableTest do
     assert %{} == @subject.analyze(%{}, %{}, %{})
   end
 
-  test "called externally but undeclared" do
+  test "called only by unused private function (not in the exported set), with transitive reported" do
+    function = {Foo, :a, 1}
+    calls = %{Bar => [{function, %{caller: {:b, 1}}}]}
+
+    assert %{{Foo, :a, 1} => %Meta{}} ==
+             @subject.analyze(calls, %{function => %Meta{}}, %{
+               report_transitively_unused: true
+             })
+  end
+
+  test "called only by unused private function (not in the exported set), default" do
     function = {Foo, :a, 1}
     calls = %{Bar => [{function, %{caller: {:b, 1}}}]}
 
     assert %{} ==
-             @subject.analyze(calls, %{function => %Meta{}}, %{
-               usages: [{Bar, :b, 1}]
+             @subject.analyze(calls, %{function => %Meta{}}, %{})
+  end
+
+  test "testing usages defined as patterns capabilities" do
+    functions = %{
+      {Foo, :a, 1} => %Meta{},
+      {Foo, :a, 2} => %Meta{},
+      {Foo, :b, 1} => %Meta{},
+      {Foo, :b, 4} => %Meta{},
+      {Bar, :a, 1} => %Meta{},
+      {Bar, :d, 1} => %Meta{},
+      {Rab, :b, 5} => %Meta{},
+      {Bob, :z, 1} => %Meta{},
+      {Bob, :z, 6} => %Meta{}
+    }
+
+    calls = %{Foo => [{{Foo, :a, 1}, %{caller: {:b, 1}}}]}
+
+    assert %{{Foo, :a, 2} => %Meta{}, {Bob, :z, 6} => %Meta{}} ==
+             @subject.analyze(calls, functions, %{
+               usages: [
+                 {~r/B\S/, :_, 1..5},
+                 {:_, :b, :_}
+               ]
              })
   end
 
-  test "called internally and externally" do
+  test "called by exported and not exported (i.e. private) functions" do
     function_a = {Foo, :a, 1}
     function_b = {Foo, :b, 1}
 
@@ -36,9 +68,7 @@ defmodule MixUnused.Analyzers.UnreachableTest do
     }
 
     assert %{} ==
-             @subject.analyze(calls, functions, %{
-               usages: [{Bar, :c, 1}]
-             })
+             @subject.analyze(calls, functions, %{})
   end
 
   test "called only internally" do
@@ -60,7 +90,7 @@ defmodule MixUnused.Analyzers.UnreachableTest do
              })
   end
 
-  test "transitively unused functions are reported when the related is enabled" do
+  test "transitively unused functions are reported when the related option is enabled" do
     function_a = {Foo, :a, 1}
     function_b = {Foo, :b, 1}
 

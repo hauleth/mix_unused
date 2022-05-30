@@ -24,23 +24,35 @@ defmodule MixUnused.Filter do
   @spec reject_matching(exports :: Exports.t(), patterns :: [pattern()]) ::
           Exports.t()
   def reject_matching(exports, patterns) do
-    filters =
-      Enum.map(patterns, fn
-        {_m, _f, _a} = entry -> entry
-        {m, f} -> {m, f, :_}
-        {m} -> {m, :_, :_}
-        m when is_atom(m) -> {m, :_, :_}
-        %Regex{} = m -> {m, :_, :_}
-        cb when is_function(cb) -> cb
-      end)
-
-    Enum.reject(exports, fn {func, meta} ->
-      Enum.any?(filters, &mfa_match?(&1, func, meta))
-    end)
-    |> Map.new()
+    Map.reject(exports, matcher(patterns))
   end
 
-  @spec mfa_match?(mfa(), pattern(), Meta.t()) :: boolean()
+  @spec filter_matching(exports :: Exports.t(), patterns :: [pattern()]) ::
+          Exports.t()
+  def filter_matching(exports, patterns) do
+    Map.filter(exports, matcher(patterns))
+  end
+
+  @spec matcher(patterns :: [pattern()]) :: ({mfa(), Meta.t()} -> boolean())
+  defp matcher(patterns) do
+    filters = normalize_filter_patterns(patterns)
+
+    fn {mfa, meta} -> Enum.any?(filters, &mfa_match?(&1, mfa, meta)) end
+  end
+
+  @spec normalize_filter_patterns(patterns :: [pattern()]) :: [pattern()]
+  defp normalize_filter_patterns(patterns) do
+    Enum.map(patterns, fn
+      {_m, _f, _a} = entry -> entry
+      {m, f} -> {m, f, :_}
+      {m} -> {m, :_, :_}
+      m when is_atom(m) -> {m, :_, :_}
+      %Regex{} = m -> {m, :_, :_}
+      cb when is_function(cb) -> cb
+    end)
+  end
+
+  @spec mfa_match?(pattern(), mfa(), Meta.t()) :: boolean()
   defp mfa_match?({pmod, pname, parity}, {fmod, fname, farity}, _meta) do
     match?(pmod, fmod) and match?(pname, fname) and arity_match?(parity, farity)
   end
