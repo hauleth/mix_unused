@@ -3,9 +3,8 @@ defmodule MixUnused.Analyzers.Unreachable.Config do
   Configuration specific to the [Unreachable](`MixUnused.Analyzers.Unreachable`) analyzer.
   """
   alias MixUnused.Filter
-  alias __MODULE__, as: Config
 
-  @type t :: %Config{
+  @type t :: %__MODULE__{
           usages: [Filter.pattern()],
           usages_discovery: [module()],
           report_transitively_unused: boolean()
@@ -15,8 +14,8 @@ defmodule MixUnused.Analyzers.Unreachable.Config do
             usages_discovery: [],
             report_transitively_unused: false
 
-  @spec cast(Enum.t()) :: Config.t()
+  @spec cast(Enum.t()) :: t()
   def cast(map) do
-    struct!(Config, map)
+    struct!(__MODULE__, map)
   end
 end

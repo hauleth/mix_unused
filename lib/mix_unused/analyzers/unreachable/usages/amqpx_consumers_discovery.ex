@@ -9,12 +9,8 @@ defmodule MixUnused.Analyzers.Unreachable.Usages.AmqpxConsumersDiscovery do
   def discover_usages(_context) do
     app = Mix.Project.config()[:app]
 
-    for %{handler_module: module} <- Application.get_env(app, :consumers, []) do
-      [
-        {module, :setup, 1},
-        {module, :handle_message, 3}
-      ]
-    end
-    |> List.flatten()
+    for %{handler_module: module} <- Application.get_env(app, :consumers, []),
+        mfa <- [{module, :setup, 1}, {module, :handle_message, 3}],
+        do: mfa
   end
 end

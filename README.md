@@ -32,7 +32,7 @@ defmodule MySystem.MixProject do
 
   def project do
     [
-      compilers: [:unused | Mix.compilers()],
+      compilers: [:unused] ++ Mix.compilers(),
       # In case of Phoenix projects you need to add it to the list
       # compilers: [:unused, :phoenix, :gettext] ++ Mix.compilers()
       # ...

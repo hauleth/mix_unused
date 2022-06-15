@@ -186,7 +186,7 @@ defmodule Mix.Tasks.Compile.Unused do
   defp filter_files_in_paths(diags, nil), do: diags
 
   defp filter_files_in_paths(diags, paths) do
-    Stream.filter(diags, fn %Diagnostic{file: file} ->
+    Enum.filter(diags, fn %Diagnostic{file: file} ->
       [root | _] = file |> Path.relative_to_cwd() |> Path.split()
       root in paths
     end)

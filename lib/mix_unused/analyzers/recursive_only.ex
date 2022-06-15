@@ -7,7 +7,7 @@ defmodule MixUnused.Analyzers.RecursiveOnly do
   def message, do: "is called only recursively"
 
   @impl true
-  def analyze(data, all_functions, _config \\ nil) do
+  def analyze(data, all_functions, _config) do
     non_rec_calls =
       for {mod, calls} <- data,
           {{m, f, a} = mfa, %{caller: {call_f, call_a}}} <- calls,

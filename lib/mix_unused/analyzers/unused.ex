@@ -10,7 +10,7 @@ defmodule MixUnused.Analyzers.Unused do
   def message, do: "is unused"
 
   @impl true
-  def analyze(data, exports, _config \\ nil) do
+  def analyze(data, exports, _config) do
     possibly_uncalled =
       Map.filter(exports, &match?({_mfa, %Meta{callback: false}}, &1))
 

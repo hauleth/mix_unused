@@ -8,14 +8,14 @@ defmodule MixUnused.Analyzers.UnusedTest do
   doctest @subject
 
   test "no functions" do
-    assert %{} == @subject.analyze(%{}, %{})
+    assert %{} == @subject.analyze(%{}, %{}, %{})
   end
 
   test "called externally" do
     function = {Foo, :a, 1}
     calls = %{Bar => [{function, %{caller: {:b, 1}}}]}
 
-    assert %{} == @subject.analyze(calls, %{function => %Meta{}})
+    assert %{} == @subject.analyze(calls, %{function => %Meta{}}, %{})
   end
 
   test "called internally and externally" do
@@ -26,20 +26,21 @@ defmodule MixUnused.Analyzers.UnusedTest do
       Bar => [{function, %{caller: {:b, 1}}}]
     }
 
-    assert %{} == @subject.analyze(calls, %{function => %Meta{}})
+    assert %{} == @subject.analyze(calls, %{function => %Meta{}}, %{})
   end
 
   test "called only internally" do
     function = {Foo, :a, 1}
     calls = %{Foo => [{function, %{caller: {:b, 1}}}]}
 
-    assert %{} == @subject.analyze(calls, %{function => %Meta{}})
+    assert %{} == @subject.analyze(calls, %{function => %Meta{}}, %{})
   end
 
   test "not called at all" do
     function = {Foo, :a, 1}
 
-    assert %{^function => _} = @subject.analyze(%{}, %{function => %Meta{}})
+    assert %{^function => _} =
+             @subject.analyze(%{}, %{function => %Meta{}}, %{})
   end
 
   test "functions with metadata `:export` set to true are ignored" do
@@ -48,7 +49,8 @@ defmodule MixUnused.Analyzers.UnusedTest do
     assert %{} ==
              @subject.analyze(
                %{},
-               %{function => %Meta{doc_meta: %{export: true}}}
+               %{function => %Meta{doc_meta: %{export: true}}},
+               %{}
              )
   end
 
@@ -66,7 +68,8 @@ defmodule MixUnused.Analyzers.UnusedTest do
            } =
              @subject.analyze(
                calls,
-               %{function_a => %Meta{}, function_b => %Meta{}}
+               %{function_a => %Meta{}, function_b => %Meta{}},
+               %{}
              )
   end
 
@@ -75,9 +78,6 @@ defmodule MixUnused.Analyzers.UnusedTest do
     functions = %{function => %Meta{doc_meta: %{defaults: 1}}}
     calls = %{Foo => [{{Foo, :a, 0}, %{caller: {:b, 1}}}]}
 
-    assert %{} ==
-             @subject.analyze(calls, functions, %{
-               usages: [{Foo, :b, 1}]
-             })
+    assert %{} == @subject.analyze(calls, functions, %{})
   end
 end

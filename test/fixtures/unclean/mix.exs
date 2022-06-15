@@ -4,7 +4,7 @@ defmodule MixUnused.Fixtures.UnleanProject do
   def project do
     [
       app: :unclean,
-      compilers: [:unused | Mix.compilers()],
+      compilers: [:unused] ++ Mix.compilers(),
       version: "0.0.0",
       unused: [
         ignore: [

@@ -62,15 +62,14 @@ defmodule MixUnused.Analyzers.Unreachable.Usages do
 
   @spec discovered_usages([module()], Context.t()) :: [mfa()]
   defp discovered_usages(modules, context) do
-    for module <- modules do
-      [
-        # the module is itself an used module since it
-        # could call functions created specifically for it
-        {module, :discover_usages, 1}
-        | module.discover_usages(context)
-      ]
-    end
-    |> List.flatten()
+    for module <- modules,
+        mfa <- [
+          # the module is itself an used module since it
+          # could call functions created specifically for it
+          {module, :discover_usages, 1}
+          | module.discover_usages(context)
+        ],
+        do: mfa
   end
 
   defp debug(modules) do

@@ -4,7 +4,7 @@ defmodule MixUnused.Fixtures.UnreachableProject do
   def project do
     [
       app: :unreachable,
-      compilers: [:unused | Mix.compilers()],
+      compilers: [:unused] ++ Mix.compilers(),
       version: "0.0.0",
       unused: [
         checks: [

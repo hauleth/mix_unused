@@ -7,10 +7,11 @@ defmodule MixUnused.Analyze do
   alias MixUnused.Exports
   alias MixUnused.Tracer
 
-  @type analyzer :: module() | {module(), any()}
+  @type config :: map()
+  @type analyzer :: module() | {module(), config()}
 
   @callback message() :: String.t()
-  @callback analyze(Tracer.data(), Exports.t(), any()) :: Exports.t()
+  @callback analyze(Tracer.data(), Exports.t(), config()) :: Exports.t()
 
   @spec analyze(
           analyzer() | [analyzer()],
@@ -23,7 +24,7 @@ defmodule MixUnused.Analyze do
     do: Enum.flat_map(analyzers, &analyze(&1, data, all_functions, config))
 
   def analyze(analyzer, data, all_functions, config) when is_atom(analyzer),
-    do: analyze({analyzer, nil}, data, all_functions, config)
+    do: analyze({analyzer, %{}}, data, all_functions, config)
 
   def analyze({analyzer, analyzer_config}, data, all_functions, config) do
     message = analyzer.message()
