@@ -30,6 +30,7 @@ defmodule MixUnused.Analyzers.Unreachable.Usages do
   @default_discoveries [
     MixUnused.Analyzers.Unreachable.Usages.AbsintheDiscovery,
     MixUnused.Analyzers.Unreachable.Usages.AmqpxConsumersDiscovery,
+    MixUnused.Analyzers.Unreachable.Usages.ApplicationDiscovery,
     MixUnused.Analyzers.Unreachable.Usages.ExqDiscovery,
     MixUnused.Analyzers.Unreachable.Usages.HttpMockPalDiscovery,
     MixUnused.Analyzers.Unreachable.Usages.PhoenixDiscovery,
