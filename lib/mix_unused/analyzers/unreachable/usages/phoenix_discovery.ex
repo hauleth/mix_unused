@@ -25,45 +25,52 @@ defmodule MixUnused.Analyzers.Unreachable.Usages.PhoenixDiscovery do
   Note: generally plugs are defined inside pipelines, but the discovery module currently does not check if a pipeline is actually used.
   """
 
+  alias MixUnused.Analyzers.Unreachable.Usages.Context
   alias MixUnused.Analyzers.Unreachable.Usages.Helpers.Aliases
   alias MixUnused.Analyzers.Unreachable.Usages.Helpers.Source
 
   @behaviour MixUnused.Analyzers.Unreachable.Usages
 
   @http_methods [
-    :get,
+    :connect,
+    :delete,
     :forward,
+    :get,
+    :head,
     :options,
     :patch,
     :post,
-    :put
+    :trace
   ]
 
   @impl true
-  def discover_usages(exports: exports) do
-    "router.ex"
-    |> Source.read_sources_with_suffix(exports)
-    |> Enum.flat_map(&analyze/1)
+  def discover_usages(%Context{exports: exports}) do
+    for source <- Source.read_sources_with_suffix("router.ex", exports),
+        mfa <- analyze(source),
+        uniq: true,
+        do: mfa
   end
 
   defp analyze(ast) do
     aliases = Aliases.new(ast)
 
-    for node <- Macro.prewalker(ast) do
-      case node do
-        {method, _, [_path, {:__aliases__, _, atoms}, f]}
-        when method in @http_methods and is_atom(f) ->
-          module = Aliases.resolve(aliases, atoms)
-          [{module, f, 2}]
+    for node <- Macro.prewalker(ast),
+        {m, f, a} <- functions_called_by_router(node),
+        {:ok, m} <- [Aliases.resolve(aliases, m)],
+        do: {m, f, a}
+  end
 
-        {:plug, _, [{:__aliases__, _, atoms} | _]} ->
-          module = Aliases.resolve(aliases, atoms)
-          [{module, :init, 1}, {module, :call, 2}]
+  defp functions_called_by_router(ast) do
+    case ast do
+      {method, _, [_path, module, f | _]}
+      when method in @http_methods and is_atom(f) ->
+        [{module, f, 2}]
 
-        _ ->
-          []
-      end
+      {:plug, _, [module | _]} ->
+        [{module, :init, 1}, {module, :call, 2}]
+
+      _ ->
+        []
     end
-    |> List.flatten()
   end
 end

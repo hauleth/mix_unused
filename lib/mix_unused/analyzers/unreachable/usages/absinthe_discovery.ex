@@ -10,6 +10,7 @@ defmodule MixUnused.Analyzers.Unreachable.Usages.AbsintheDiscovery do
   This could be wrong if the related schemas are not referred anywhere.
   """
 
+  alias MixUnused.Analyzers.Unreachable.Usages.Context
   alias MixUnused.Analyzers.Unreachable.Usages.Helpers.Aliases
   alias MixUnused.Analyzers.Unreachable.Usages.Helpers.Source
   alias MixUnused.Meta
@@ -17,24 +18,20 @@ defmodule MixUnused.Analyzers.Unreachable.Usages.AbsintheDiscovery do
   @behaviour MixUnused.Analyzers.Unreachable.Usages
 
   @impl true
-  def discover_usages(exports: exports) do
-    # TODO: it should start from the schemas used in the routers
-    for {{_m, :__absinthe_function__, _a} = mfa, %Meta{file: file}} <- exports do
-      detected_usages = file |> Source.read_source() |> analyze()
-      [mfa | detected_usages]
-    end
-    |> List.flatten()
+  def discover_usages(%Context{exports: exports}) do
+    for {{_m, :__absinthe_function__, _a} = absinthe_mfa, %Meta{file: file}} <-
+          exports,
+        source <- [Source.read_source(file)],
+        mfa <- [absinthe_mfa | analyze(source)],
+        uniq: true,
+        do: mfa
   end
 
   defp analyze(ast) do
     aliases = Aliases.new(ast)
 
-    middlewares =
-      for {:middleware, _, [{:__aliases__, _, atoms} | _args]} <-
-            Macro.prewalker(ast) do
-        {Aliases.resolve(aliases, atoms), :call, 2}
-      end
-
-    Enum.uniq(middlewares)
+    for {:middleware, _, [module | _args]} <- Macro.prewalker(ast),
+        {:ok, module} <- [Aliases.resolve(aliases, module)],
+        do: {module, :call, 2}
   end
 end

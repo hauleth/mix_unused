@@ -32,12 +32,13 @@ defmodule MixUnused.Analyzers.Unreachable.Usages.SupervisorDiscovery do
   * it currently does not resolve aliases, for this reason the `Supervisor` itself is not detected in the example above.
   """
 
+  alias MixUnused.Analyzers.Unreachable.Usages.Context
   alias MixUnused.Analyzers.Unreachable.Usages.Helpers.Source
 
   @behaviour MixUnused.Analyzers.Unreachable.Usages
 
   @impl true
-  def discover_usages(exports: exports) do
+  def discover_usages(%Context{exports: exports}) do
     "supervisor.ex"
     |> Source.read_sources_with_suffix(exports)
     |> Enum.flat_map(&analyze(&1, exports))

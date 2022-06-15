@@ -6,7 +6,7 @@ defmodule MixUnused.Analyzers.Unreachable.Usages.HttpMockPalDiscovery do
   @behaviour MixUnused.Analyzers.Unreachable.Usages
 
   @impl true
-  def discover_usages(_opts) do
+  def discover_usages(_context) do
     for {module, _} <- Application.get_env(:http_mock_pal, :routers, []) do
       {module, :call, 2}
     end

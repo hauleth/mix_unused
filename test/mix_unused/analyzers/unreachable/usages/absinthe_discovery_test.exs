@@ -1,6 +1,7 @@
 defmodule MixUnused.Analyzers.Unreachable.Usages.AbsintheDiscoveryTest do
   use ExUnit.Case
 
+  alias MixUnused.Analyzers.Unreachable.Usages.Context
   alias MixUnused.Analyzers.Unreachable.Usages.AbsintheDiscovery
   alias MixUnused.Meta
 
@@ -19,7 +20,7 @@ defmodule MixUnused.Analyzers.Unreachable.Usages.AbsintheDiscoveryTest do
         ]
       end do
       usages =
-        AbsintheDiscovery.discover_usages(
+        AbsintheDiscovery.discover_usages(%Context{
           exports: %{
             {Schema, :__absinthe_function__, 1} => %Meta{
               file: "schema.ex"
@@ -28,7 +29,7 @@ defmodule MixUnused.Analyzers.Unreachable.Usages.AbsintheDiscoveryTest do
               file: "types.ex"
             }
           }
-        )
+        })
 
       assert {Schema, :__absinthe_function__, 1} in usages
       assert {Schema.Types, :__absinthe_function__, 1} in usages
@@ -72,7 +73,7 @@ defmodule MixUnused.Analyzers.Unreachable.Usages.AbsintheDiscoveryTest do
         ]
       end do
       usages =
-        AbsintheDiscovery.discover_usages(
+        AbsintheDiscovery.discover_usages(%Context{
           exports: %{
             {Schema, :__absinthe_function__, 1} => %Meta{
               file: "schema.ex"
@@ -81,7 +82,7 @@ defmodule MixUnused.Analyzers.Unreachable.Usages.AbsintheDiscoveryTest do
               file: "types.ex"
             }
           }
-        )
+        })
 
       assert {App.GraphQL.Logger, :call, 2} in usages
       assert {App.GraphQL.Authorization.RequirePermission, :call, 2} in usages

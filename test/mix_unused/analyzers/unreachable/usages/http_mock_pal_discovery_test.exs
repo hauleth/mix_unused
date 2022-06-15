@@ -14,7 +14,7 @@ defmodule MixUnused.Analyzers.Unreachable.Usages.HttpMockPalDiscoveryTest do
             {MySecondMock, port: 8000}
           ]
       end do
-      usages = HttpMockPalDiscovery.discover_usages(any: "this is unused")
+      usages = HttpMockPalDiscovery.discover_usages(nil)
 
       assert {MyFirstMock, :call, 2} in usages
       assert {MySecondMock, :call, 2} in usages
@@ -27,7 +27,7 @@ defmodule MixUnused.Analyzers.Unreachable.Usages.HttpMockPalDiscoveryTest do
       get_env: fn
         :http_mock_pal, :routers, [] -> []
       end do
-      usages = HttpMockPalDiscovery.discover_usages(any: "this is unused")
+      usages = HttpMockPalDiscovery.discover_usages(nil)
 
       assert usages == []
     end

@@ -1,6 +1,7 @@
 defmodule MixUnused.Analyzers.Unreachable.Usages.SupervisorDiscoveryTest do
   use ExUnit.Case
 
+  alias MixUnused.Analyzers.Unreachable.Usages.Context
   alias MixUnused.Analyzers.Unreachable.Usages.SupervisorDiscovery
 
   alias MixUnused.Meta
@@ -31,7 +32,7 @@ defmodule MixUnused.Analyzers.Unreachable.Usages.SupervisorDiscoveryTest do
         }
       end do
       usages =
-        SupervisorDiscovery.discover_usages(
+        SupervisorDiscovery.discover_usages(%Context{
           exports: %{
             {MyApp.AGenServer, :handle_call, 3} => %Meta{
               file: "a_genserver.ex"
@@ -41,7 +42,7 @@ defmodule MixUnused.Analyzers.Unreachable.Usages.SupervisorDiscoveryTest do
               file: "supervisor.ex"
             }
           }
-        )
+        })
 
       assert {MyApp.MySupervisor, :init, 1} in usages
       assert {MyApp.AGenServer, :handle_call, 3} in usages

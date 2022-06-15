@@ -10,7 +10,7 @@ defmodule MixUnused.Analyzers.Unreachable.Usages.VmstatsDiscoveryTest do
       get_env: fn
         :vmstats, :sink -> VMStatsSink
       end do
-      usages = VmstatsDiscovery.discover_usages(any: "this is unused")
+      usages = VmstatsDiscovery.discover_usages(nil)
 
       assert {VMStatsSink, :collect, 3} in usages
       assert 1 == length(usages)
@@ -22,7 +22,7 @@ defmodule MixUnused.Analyzers.Unreachable.Usages.VmstatsDiscoveryTest do
       get_env: fn
         :vmstats, :sink -> nil
       end do
-      usages = VmstatsDiscovery.discover_usages(any: "this is unused")
+      usages = VmstatsDiscovery.discover_usages(nil)
 
       assert usages == []
     end

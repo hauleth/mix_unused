@@ -25,7 +25,7 @@ defmodule MixUnused.Analyzers.Unreachable.Usages.AmqpxConsumersDiscoveryTest do
          end
        ]}
     ] do
-      usages = AmqpxConsumersDiscovery.discover_usages(any: "this is unused")
+      usages = AmqpxConsumersDiscovery.discover_usages(nil)
 
       assert {MyApplication.MyFirstConsumer, :setup, 1} in usages
       assert {MyApplication.MyFirstConsumer, :handle_message, 3} in usages
@@ -45,7 +45,7 @@ defmodule MixUnused.Analyzers.Unreachable.Usages.AmqpxConsumersDiscoveryTest do
          end
        ]}
     ] do
-      usages = AmqpxConsumersDiscovery.discover_usages(any: "this is unused")
+      usages = AmqpxConsumersDiscovery.discover_usages(nil)
 
       assert usages == []
     end

@@ -6,7 +6,7 @@ defmodule MixUnused.Analyzers.Unreachable.Usages.AmqpxConsumersDiscovery do
   @behaviour MixUnused.Analyzers.Unreachable.Usages
 
   @impl true
-  def discover_usages(_opts) do
+  def discover_usages(_context) do
     app = Mix.Project.config()[:app]
 
     for %{handler_module: module} <- Application.get_env(app, :consumers, []) do

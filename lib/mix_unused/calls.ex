@@ -6,11 +6,13 @@ defmodule MixUnused.Analyzers.Calls do
   alias MixUnused.Meta
   alias MixUnused.Tracer
 
+  @type t :: Graph.t()
+
   @doc """
   Creates a graph where each node is a function and an edge from `f` to `g`
   means that the function `f` calls `g`.
   """
-  @spec calls_graph(Tracer.data(), Exports.t()) :: Graph.t()
+  @spec calls_graph(Tracer.data(), Exports.t()) :: t()
   def calls_graph(data, exports) do
     Graph.new(type: :directed)
     |> add_calls(data)

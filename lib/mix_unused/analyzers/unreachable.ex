@@ -17,7 +17,10 @@ defmodule MixUnused.Analyzers.Unreachable do
   def analyze(data, exports, config) do
     config = Config.cast(config)
     graph = Calls.calls_graph(data, exports)
-    usages = Usages.usages(config, exports)
+
+    usages =
+      Usages.usages(config, %Usages.Context{calls: graph, exports: exports})
+
     reachables = graph |> Graph.reachable(usages) |> MapSet.new()
     called_at_compile_time = Calls.called_at_compile_time(data, exports)
 
