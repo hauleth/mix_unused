@@ -9,7 +9,7 @@ defmodule MixUnused.MixProject do
       app: :mix_unused,
       description: "Mix compiler tracer for detecting unused public functions",
       version: @version,
-      elixir: "~> 1.10",
+      elixir: "~> 1.13",
       package: [
         licenses: ~w[MIT],
         links: %{
