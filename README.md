@@ -36,12 +36,19 @@ defmodule MySystem.MixProject do
       # In case of Phoenix projects you need to add it to the list
       # compilers: [:unused, :phoenix, :gettext] ++ Mix.compilers()
       # ...
+      #
+      # If you want to only run it in the dev environment you could do
+      # it by using `compilers: compilers(Mix.env()) ++ Mix.compilers()`
+      # instead and then returning the right compilers per environment.
     ]
   end
 
   # ...
 end
 ```
+
+Then you just need to run `mix compile` or `mix compile --force` as usual
+and unused hints will be added to the end of the output.
 
 ### Warning
 
