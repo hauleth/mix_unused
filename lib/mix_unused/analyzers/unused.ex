@@ -1,22 +1,20 @@
 defmodule MixUnused.Analyzers.Unused do
   @moduledoc false
 
+  alias MixUnused.Analyzers.Calls
+  alias MixUnused.Meta
+
   @behaviour MixUnused.Analyze
 
   @impl true
   def message, do: "is unused"
 
   @impl true
-  def analyze(data, possibly_uncalled) do
-    graph = Graph.new(type: :directed)
+  def analyze(data, exports, _config) do
+    possibly_uncalled =
+      Map.filter(exports, &match?({_mfa, %Meta{callback: false}}, &1))
 
-    graph =
-      for {m, calls} <- data,
-          {mfa, %{caller: {f, a}}} <- calls,
-          reduce: graph do
-        acc ->
-          Graph.add_edge(acc, {m, f, a}, mfa)
-      end
+    graph = Calls.calls_graph(data, possibly_uncalled)
 
     called =
       Graph.Reducers.Dfs.reduce(graph, MapSet.new(), fn v, acc ->

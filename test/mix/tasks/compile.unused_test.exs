@@ -3,7 +3,7 @@ defmodule Mix.Tasks.Compile.UnusedTest do
 
   import ExUnit.CaptureIO
 
-  alias MixUnused.Analyzers.{Private, Unused, RecursiveOnly}
+  alias MixUnused.Analyzers.{Private, Unreachable, Unused, RecursiveOnly}
 
   describe "umbrella" do
     test "simple file" do
@@ -74,6 +74,157 @@ defmodule Mix.Tasks.Compile.UnusedTest do
                    "compile",
                    ~w[--severity warning --warnings-as-errors]
                  )
+      end)
+    end
+  end
+
+  describe "using unreachable analyzer" do
+    test "unused functions are reported" do
+      in_fixture("unreachable", fn ->
+        assert {{:ok, diagnostics}, output} = run(:unreachable, "compile")
+        assert 4 == length(diagnostics), output
+      end)
+    end
+
+    test "used structs are not reported" do
+      in_fixture("unreachable", fn ->
+        assert {{:ok, diagnostics}, output} = run(:unreachable, "compile")
+
+        refute find_diagnostics_for(
+                 diagnostics,
+                 {SimpleStruct, :__struct__, 0},
+                 Unreachable
+               ),
+               output
+      end)
+    end
+
+    test "public functions called with default arguments are not reported" do
+      in_fixture("unreachable", fn ->
+        assert {{:ok, diagnostics}, output} = run(:unreachable, "compile")
+
+        refute find_diagnostics_for(
+                 diagnostics,
+                 {SimpleStruct, :foo, 2},
+                 Unreachable
+               ),
+               output
+      end)
+    end
+
+    test "top-level unused functions are reported" do
+      in_fixture("unreachable", fn ->
+        assert {{:ok, diagnostics}, output} = run(:unreachable, "compile")
+
+        assert find_diagnostics_for(
+                 diagnostics,
+                 {SimpleModule, :public_unused, 0},
+                 Unreachable
+               ),
+               output
+      end)
+    end
+
+    test "functions called transitively from used functions are not reported by default" do
+      in_fixture("unreachable", fn ->
+        assert {{:ok, diagnostics}, output} = run(:unreachable, "compile")
+
+        refute find_diagnostics_for(
+                 diagnostics,
+                 {SimpleModule, :use_foo, 1},
+                 Unreachable
+               ),
+               output
+      end)
+    end
+
+    test "functions called transitively from unused public functions are not reported by default" do
+      in_fixture("unreachable", fn ->
+        assert {{:ok, diagnostics}, output} = run(:unreachable, "compile")
+
+        refute find_diagnostics_for(
+                 diagnostics,
+                 {SimpleModule, :used_from_unused, 0},
+                 Unreachable
+               ),
+               output
+      end)
+    end
+
+    test "functions called transitively from unused private functions are not reported by default" do
+      in_fixture("unreachable", fn ->
+        assert {{:ok, diagnostics}, output} = run(:unreachable, "compile")
+
+        refute find_diagnostics_for(
+                 diagnostics,
+                 {SimpleModule, :public_used_by_unused_private, 0},
+                 Unreachable
+               ),
+               output
+      end)
+    end
+
+    test "functions declared as used are not reported" do
+      in_fixture("unreachable", fn ->
+        assert {{:ok, diagnostics}, output} = run(:unreachable, "compile")
+
+        refute find_diagnostics_for(
+                 diagnostics,
+                 {SimpleServer, :init, 1},
+                 Unreachable
+               ),
+               output
+      end)
+    end
+
+    test "generated functions are not reported" do
+      in_fixture("unreachable", fn ->
+        assert {{:ok, diagnostics}, output} = run(:unreachable, "compile")
+
+        refute find_diagnostics_for(
+                 diagnostics,
+                 {SimpleModule, :g, 0},
+                 Unreachable
+               ),
+               output
+      end)
+    end
+
+    test "functions evaluated at compile-time are not reported" do
+      in_fixture("unreachable", fn ->
+        assert {{:ok, diagnostics}, output} = run(:unreachable, "compile")
+
+        refute find_diagnostics_for(
+                 diagnostics,
+                 {Constants, :answer, 0},
+                 Unreachable
+               ),
+               output
+      end)
+    end
+
+    test "unused structs are reported" do
+      in_fixture("unreachable", fn ->
+        assert {{:ok, diagnostics}, output} = run(:unreachable, "compile")
+
+        assert find_diagnostics_for(
+                 diagnostics,
+                 {UnusedStruct, :__struct__, 0},
+                 Unreachable
+               ),
+               output
+      end)
+    end
+
+    test "unused private functions are reported by Elixir" do
+      in_fixture("unreachable", fn ->
+        assert {{:ok, diagnostics}, output} = run(:unreachable, "compile")
+
+        diagnostics = Enum.filter(diagnostics, &(&1.compiler_name == "Elixir"))
+
+        assert [%{message: "function private_unused/0 is unused"}] =
+                 diagnostics,
+               output
       end)
     end
   end
@@ -212,7 +363,8 @@ defmodule Mix.Tasks.Compile.UnusedTest do
   defp find_diagnostics_for(diagnostics, mfa, analyzer) do
     Enum.find(
       diagnostics,
-      &(&1.details.mfa == mfa and &1.details.analyzer == analyzer)
+      &(&1.compiler_name == "unused" and &1.details.mfa == mfa and
+          &1.details.analyzer == analyzer)
     )
   end
 end

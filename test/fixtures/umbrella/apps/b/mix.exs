@@ -4,7 +4,7 @@ defmodule MixUnused.Fixtures.Umbrella.BProject do
   def project do
     [
       app: :b,
-      compilers: [:unused | Mix.compilers()],
+      compilers: [:unused] ++ Mix.compilers(),
       version: "0.0.0",
       deps: [{:a, in_umbrella: true}]
     ]

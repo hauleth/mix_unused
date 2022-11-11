@@ -7,7 +7,7 @@ defmodule MixUnused.Analyzers.Private do
   def message, do: "should be private (is not used outside defining module)"
 
   @impl true
-  def analyze(data, all_functions) do
+  def analyze(data, all_functions, _config) do
     data = Map.new(data)
 
     for {{_, f, _} = mfa, meta} = desc <- all_functions,

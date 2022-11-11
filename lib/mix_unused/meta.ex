@@ -12,13 +12,22 @@ defmodule MixUnused.Meta do
     (currently, it can point to the line where documentation is defined, not
     exactly to function head).
   - `:doc_meta` - documentation metadata of the given function.
+  - `:callback` - true if the function is a callback, false otherwise.
+  - `:generated` - true if the function is generated, false if this condition is not determinated.
   """
   @type t() :: %__MODULE__{
           signature: String.t(),
           file: String.t(),
           line: non_neg_integer(),
-          doc_meta: map()
+          doc_meta: map(),
+          callback: boolean(),
+          generated: boolean()
         }
 
-  defstruct signature: nil, file: "nofile", line: 1, doc_meta: %{}
+  defstruct signature: nil,
+            file: "nofile",
+            line: 1,
+            doc_meta: %{},
+            callback: false,
+            generated: false
 end

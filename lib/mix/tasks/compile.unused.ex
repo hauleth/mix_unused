@@ -142,7 +142,9 @@ defmodule Mix.Tasks.Compile.Unused do
 
     config.checks
     |> MixUnused.Analyze.analyze(data, all_functions, config)
+    |> filter_files_in_paths(config.paths)
     |> Enum.sort_by(&{&1.file, &1.position, &1.details.mfa})
+    |> limit_results(config.limit)
     |> tap_all(&print_diagnostic/1)
     |> case do
       [] ->
@@ -180,6 +182,18 @@ defmodule Mix.Tasks.Compile.Unused do
   defp normalise_cache({:v0, map}) when is_map(map), do: {:v0, map}
   defp normalise_cache(map) when is_map(map), do: {:v0, map}
   defp normalise_cache(_), do: %{}
+
+  defp filter_files_in_paths(diags, nil), do: diags
+
+  defp filter_files_in_paths(diags, paths) do
+    Enum.filter(diags, fn %Diagnostic{file: file} ->
+      [root | _] = file |> Path.relative_to_cwd() |> Path.split()
+      root in paths
+    end)
+  end
+
+  defp limit_results(diags, nil), do: diags
+  defp limit_results(diags, limit), do: Enum.take(diags, limit)
 
   defp print_diagnostic(%Diagnostic{details: %{mfa: {_, :__struct__, 1}}}),
     do: nil

@@ -8,14 +8,15 @@ defmodule MixUnused.Analyzers.RecursiveOnlyTest do
   doctest @subject
 
   test "no functions" do
-    assert %{} == @subject.analyze(%{}, [])
+    assert %{} == @subject.analyze(%{}, [], %{})
   end
 
   test "called only recursively" do
     function = {Foo, :a, 1}
     calls = %{Foo => [{function, %{caller: {:a, 1}}}]}
 
-    assert %{^function => _} = @subject.analyze(calls, [{function, %Meta{}}])
+    assert %{^function => _} =
+             @subject.analyze(calls, [{function, %Meta{}}], %{})
   end
 
   test "called by other function within the same module" do
@@ -28,6 +29,6 @@ defmodule MixUnused.Analyzers.RecursiveOnlyTest do
       ]
     }
 
-    assert %{} == @subject.analyze(calls, [{function, %Meta{}}])
+    assert %{} == @subject.analyze(calls, [{function, %Meta{}}], %{})
   end
 end
