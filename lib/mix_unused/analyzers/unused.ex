@@ -21,7 +21,7 @@ defmodule MixUnused.Analyzers.Unused do
     called =
       Graph.Reducers.Dfs.reduce(graph, MapSet.new(), fn v, acc ->
         if v in acc do
-          {:halt, acc}
+          {:skip, acc}
         else
           edges = Graph.edges(graph, v)
 
@@ -33,7 +33,7 @@ defmodule MixUnused.Analyzers.Unused do
                 end)
             end)
 
-          acc = if called?, do: MapSet.put(acc, v), else: acc
+          acc = if called?, do: mark_as_called(v, acc, graph), else: acc
 
           {:next, acc}
         end
@@ -44,5 +44,22 @@ defmodule MixUnused.Analyzers.Unused do
         mfa not in called,
         into: %{},
         do: call
+  end
+
+  # Mark the given mfa as called. Then fetch a list
+  # of all mfas this calls and recursively mark them
+  # as called too.
+  defp mark_as_called(mfa, acc, graph) do
+    if mfa in acc do
+      acc
+    else
+      acc = MapSet.put(acc, mfa)
+
+      graph
+      |> Graph.out_neighbors(mfa)
+      |> Enum.reduce(acc, fn neighbor, acc ->
+        mark_as_called(neighbor, acc, graph)
+      end)
+    end
   end
 end
