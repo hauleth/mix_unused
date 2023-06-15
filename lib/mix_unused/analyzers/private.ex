@@ -11,11 +11,11 @@ defmodule MixUnused.Analyzers.Private do
     data = Map.new(data)
 
     for {{_, f, _} = mfa, meta} = desc <- all_functions,
+        # Ignore functions with documentation meta `:internal` key set to true
+        not Map.get(meta.doc_meta, :internal, false),
         # Ignore `__.*__` as these are often meant to be called only internally
         not (to_string(f) =~ ~r/__.*__/),
         not_called_externally?(mfa, data),
-        # Ignore functions with documentation meta `:internal` key set to true
-        not Map.get(meta.doc_meta, :internal, false),
         into: %{},
         do: desc
   end
