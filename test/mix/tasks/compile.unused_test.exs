@@ -194,18 +194,18 @@ defmodule Mix.Tasks.Compile.UnusedTest do
   end
 
   describe "cycle" do
-     test "unused function is reported" do
-       in_fixture("cycle", fn ->
-         assert {{:ok, diagnostics}, output} = run(:cycle, "compile")
-         refute output =~ "Foo.foo/0 is unused"
-         refute output =~ "Bar.bar/0 is unused"
-         refute output =~ "Baz.baz/0 is unused"
-         refute find_diagnostics_for(diagnostics, {Foo, :foo, 0}, Unused)
-         refute find_diagnostics_for(diagnostics, {Bar, :bar, 0}, Unused)
-         refute find_diagnostics_for(diagnostics, {Baz, :baz, 0}, Unused)
-       end)
-     end
-   end
+    test "unused function is reported" do
+      in_fixture("cycle", fn ->
+        assert {{:ok, diagnostics}, output} = run(:cycle, "compile")
+        refute output =~ "Foo.foo/0 is unused"
+        refute output =~ "Bar.bar/0 is unused"
+        refute output =~ "Baz.baz/0 is unused"
+        refute find_diagnostics_for(diagnostics, {Foo, :foo, 0}, Unused)
+        refute find_diagnostics_for(diagnostics, {Bar, :bar, 0}, Unused)
+        refute find_diagnostics_for(diagnostics, {Baz, :baz, 0}, Unused)
+      end)
+    end
+  end
 
   defp run(project, task, args \\ []) do
     Mix.Project.in_project(project, ".", fn _ ->
