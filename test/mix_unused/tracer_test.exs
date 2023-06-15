@@ -196,5 +196,16 @@ defmodule MixUnused.TracerTest do
       assert find_call(ctx.calls, {^name, :foo, 0}, %{caller: {:a, 0}})
       assert find_call(ctx.calls, {^name, :foo, 0}, %{caller: {:b, 0}})
     end
+
+    @code (quote do
+             def foo do
+               fn ->
+                 Bar.baz()
+               end
+             end
+           end)
+    test "stores functions called in lambdas", ctx do
+      assert find_call(ctx.calls, {Bar, :baz, 0})
+    end
   end
 end
