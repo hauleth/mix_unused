@@ -15,6 +15,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <a name="unreleased"></a>
 ## [Unreleased]
 
+### Bug Fixes
+- resolve issue with unused analyzer reporting false positives ([`3b86630`](https://github.com/hauleth/mix_unused/commit/3b866308a7afe89d09f3293566439267cf0eaef7))
+
 ### Documentation
 - Improve Usage Docs a bit around usage ([`a191c46`](https://github.com/hauleth/mix_unused/commit/a191c46b47733a044bc7a496c72dabc392feaea9))
 
