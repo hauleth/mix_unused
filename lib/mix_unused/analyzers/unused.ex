@@ -10,6 +10,8 @@ defmodule MixUnused.Analyzers.Unused do
   def analyze(data, possibly_uncalled) do
     graph = Graph.new(type: :directed)
 
+    uncalled_funcs = MapSet.new(possibly_uncalled, fn {mfa, _} -> mfa end)
+
     graph =
       for {m, calls} <- data,
           {mfa, %{caller: {f, a}}} <- calls,
@@ -18,30 +20,10 @@ defmodule MixUnused.Analyzers.Unused do
           Graph.add_edge(acc, {m, f, a}, mfa)
       end
 
-    called =
-      Graph.Reducers.Dfs.reduce(graph, MapSet.new(), fn v, acc ->
-        if v in acc do
-          {:halt, acc}
-        else
-          edges = Graph.edges(graph, v)
-
-          called? =
-            Enum.any?(edges, fn %{v1: caller} ->
-              caller in acc or
-                Enum.all?(possibly_uncalled, fn {mfa, _} ->
-                  mfa != caller
-                end)
-            end)
-
-          acc = if called?, do: MapSet.put(acc, v), else: acc
-
-          {:next, acc}
-        end
-      end)
-
     for {mfa, meta} = call <- possibly_uncalled,
         not Map.get(meta.doc_meta, :export, false),
-        mfa not in called,
+        reaching = Graph.reaching_neighbors(graph, [mfa]),
+        Enum.all?(reaching, fn caller -> caller in uncalled_funcs end),
         into: %{},
         do: call
   end
