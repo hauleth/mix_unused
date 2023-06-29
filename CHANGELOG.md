@@ -15,6 +15,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <a name="unreleased"></a>
 ## [Unreleased]
 
+
+<a name="v0.4.1"></a>
+## [v0.4.1] - 2023-06-15
 ### Bug Fixes
 - resolve issue with unused analyzer reporting false positives ([`3b86630`](https://github.com/hauleth/mix_unused/commit/3b866308a7afe89d09f3293566439267cf0eaef7))
 
@@ -102,7 +105,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - add module.behaviour_info/1 to list of ignored built ins ([`df2f7e2`](https://github.com/hauleth/mix_unused/commit/df2f7e2209f5ee229d9c3c5efe3ee5c9b40f3261))
 
 
-[Unreleased]: https://github.com/hauleth/mix_unused/compare/v0.4.0...HEAD
+[Unreleased]: https://github.com/hauleth/mix_unused/compare/v0.4.1...HEAD
+[v0.4.1]: https://github.com/hauleth/mix_unused/compare/v0.4.0...v0.4.1
 [v0.4.0]: https://github.com/hauleth/mix_unused/compare/v0.3.0...v0.4.0
 [v0.3.0]: https://github.com/hauleth/mix_unused/compare/v0.2.1...v0.3.0
 [v0.2.1]: https://github.com/hauleth/mix_unused/compare/v0.2.0...v0.2.1
