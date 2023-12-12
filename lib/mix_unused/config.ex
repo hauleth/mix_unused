@@ -25,6 +25,7 @@ defmodule MixUnused.Config do
 
   defp extract_config(%__MODULE__{} = config, mix_config) do
     config
+    |> maybe_set(:checks, mix_config[:checks])
     |> maybe_set(:ignore, mix_config[:ignore])
     |> maybe_set(:severity, mix_config[:severity])
     |> maybe_set(:warnings_as_errors, mix_config[:warnings_as_errors])
