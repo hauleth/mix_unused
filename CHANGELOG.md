@@ -15,6 +15,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <a name="unreleased"></a>
 ## [Unreleased]
 
+### Features
+- Allow for specifying checks in mix config ([`6f9eb52`](https://github.com/hauleth/mix_unused/commit/6f9eb5293b8da65a18943e630efe2891eb4917ea))
+
 
 <a name="v0.4.1"></a>
 ## [v0.4.1] - 2023-06-29
