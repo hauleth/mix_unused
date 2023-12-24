@@ -22,15 +22,14 @@ jobs:
     name: Check formatting (invalid/format)
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Set up Elixir
       uses: erlef/setup-beam@v1
       with:
-        otp-version: '24.0'
-        elixir-version: '1.12.1'
-        rebar3-version: '3.15.2'
+        otp-version: '26'
+        elixir-version: '1.16'
     - name: Restore dependencies cache
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: deps
         key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
@@ -44,15 +43,14 @@ jobs:
     name: Check our credo (invalid/credo)
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Set up Elixir
       uses: erlef/setup-beam@v1
       with:
-        otp-version: '24.0'
-        elixir-version: '1.12.1'
-        rebar3-version: '3.15.2'
+        otp-version: '26'
+        elixir-version: '1.16'
     - name: Restore dependencies cache
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: deps
         key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}

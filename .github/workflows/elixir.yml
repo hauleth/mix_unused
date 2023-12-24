@@ -15,14 +15,14 @@ jobs:
         otp_version: ['24', '25', '26']
         elixir_version: ['1.14', '1.15', '1.16']
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Set up Elixir
       uses: erlef/setup-beam@v1
       with:
         otp-version: ${{ matrix.otp_version }}
         elixir-version: ${{ matrix.elixir_version }}
     - name: Restore dependencies cache
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: deps
         key: ${{ runner.os }}-otp-${{ matrix.otp_version }}-mix-${{ hashFiles('**/mix.lock') }}
@@ -31,7 +31,7 @@ jobs:
       run: mix do deps.get, deps.compile
     - name: Run tests
       run: mix test --cover
-    - uses: codecov/codecov-action@v2
+    - uses: codecov/codecov-action@v3
       with:
         files: ./coverage.xml
         flags: elixir-${{ matrix.elixir_version }},otp-${{ matrix.otp_version }}
