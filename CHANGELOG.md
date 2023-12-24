@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Features
+- ignore generated functions ([`6209033`](https://github.com/hauleth/mix_unused/commit/6209033df52ce68ef18f070d5f97fe010f4bd1f9))
 - Allow for specifying checks in mix config ([`6f9eb52`](https://github.com/hauleth/mix_unused/commit/6f9eb5293b8da65a18943e630efe2891eb4917ea))
 
 
