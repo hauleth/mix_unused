@@ -10,6 +10,7 @@ defmodule MixUnused.MixProject do
       description: "Mix compiler tracer for detecting unused public functions",
       version: @version,
       elixir: "~> 1.10",
+      elixirc_paths: elixirc_paths(Mix.env()),
       package: [
         licenses: ~w[MIT],
         links: %{
@@ -46,4 +47,7 @@ defmodule MixUnused.MixProject do
       extra_applications: [:mix, :logger]
     ]
   end
+
+  defp elixirc_paths(:test), do: ~w[lib test/support]
+  defp elixirc_paths(_), do: ~w[lib]
 end

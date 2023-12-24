@@ -7,12 +7,6 @@ defmodule MixUnused.Exports do
 
   @types ~w[function macro]a
 
-  @ignored [
-    # It is created automatically by `defstruct` and it is (almost?) never used
-    # directly. Instead we will look for expansions in form of `%module{}`
-    {:__struct__, 1}
-  ]
-
   @spec application(atom()) :: t()
   def application(name) do
     _ = Application.load(name)
@@ -38,13 +32,18 @@ defmodule MixUnused.Exports do
         data[:compile_info] |> Keyword.get(:source, "nofile") |> to_string()
 
       for {{type, name, arity}, anno, [sig | _], _doc, meta} <- docs,
+          {name, arity} == {:__struct__, 0} or not :erl_anno.generated(anno),
           type in @types,
-          {name, arity} not in @ignored,
           {name, arity} not in callbacks do
         line = :erl_anno.line(anno)
 
         {{module, name, arity},
-         %Meta{signature: sig, file: source, line: line, doc_meta: meta}}
+         %Meta{
+           signature: sig,
+           file: source,
+           line: line,
+           doc_meta: meta
+         }}
       end
     else
       _ -> []

@@ -20,5 +20,8 @@ defmodule MixUnused.Meta do
           doc_meta: map()
         }
 
-  defstruct signature: nil, file: "nofile", line: 1, doc_meta: %{}
+  defstruct signature: nil,
+            file: "nofile",
+            line: 1,
+            doc_meta: %{}
 end
