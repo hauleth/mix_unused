@@ -50,7 +50,7 @@ defmodule MixUnused.Case do
       |> MapSet.difference(loaded_apps_before)
       |> Enum.each(&Application.unload/1)
 
-      # File.rm_rf(tmp_path)
+      File.rm_rf(tmp_path)
     end
   end
 
