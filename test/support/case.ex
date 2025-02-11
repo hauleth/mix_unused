@@ -58,11 +58,10 @@ defmodule MixUnused.Case do
     options = Code.compiler_options()
 
     try do
-      Code.put_compiler_option(:warnings_as_errors, false)
       Code.put_compiler_option(:ignore_module_conflict, true)
       Code.put_compiler_option(:ignore_already_consolidated, true)
 
-      run_task("compile", opts)
+      run_task("compile", [warnings_as_errors: false] ++ opts)
     after
       Code.compiler_options(options)
     end

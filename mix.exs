@@ -11,6 +11,7 @@ defmodule MixUnused.MixProject do
       version: @version,
       elixir: "~> 1.10",
       elixirc_paths: elixirc_paths(Mix.env()),
+      env: [test: [warnings_as_errors: false]],
       package: [
         licenses: ~w[MIT],
         links: %{
@@ -24,7 +25,7 @@ defmodule MixUnused.MixProject do
         {:credo, ">= 0.0.0", only: :dev, runtime: false},
         {:ex_doc, ">= 0.0.0", only: :dev, runtime: false},
         {:dialyxir, "~> 1.0", only: :dev, runtime: false},
-        {:stream_data, ">= 0.0.0", only: [:test, :dev]},
+        {:stream_data, "~> 1.0", only: [:test, :dev]},
         {:covertool, "~> 2.0", only: :test}
       ],
       docs: [

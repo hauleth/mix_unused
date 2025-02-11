@@ -31,7 +31,6 @@ defmodule MixUnused.TracerTest do
           end
 
         Code.put_compiler_option(:tracers, [@subject])
-        Code.put_compiler_option(:warnings_as_errors, false)
         Code.put_compiler_option(:ignore_module_conflict, true)
         Code.put_compiler_option(:ignore_already_consolidated, true)
         Code.put_compiler_option(:no_warn_undefined, :all)

@@ -58,6 +58,6 @@ defmodule MixUnused.Filter do
 
   defp arity_match?(:_, _value), do: true
   defp arity_match?(value, value), do: true
-  defp arity_match?(_.._ = range, value), do: value in range
+  defp arity_match?(_.._//_ = range, value), do: value in range
   defp arity_match?(_, _), do: false
 end
